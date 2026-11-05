@@ -131,5 +131,20 @@
   "subtitles.skywyrms.ability.void_blink": "Dragon vanishes",
   "subtitles.skywyrms.ability.void_arrive": "Dragon reappears",
   "subtitles.skywyrms.egg.crack": "Dragon egg cracks",
-  "subtitles.skywyrms.egg.hatch": "Dragon egg hatches"
+  "subtitles.skywyrms.egg.hatch": "Dragon egg hatches",
+  "entity.skywyrms.solar_wyrm": "Solar Wyrm",
+  "item.skywyrms.solar_wyrm_spawn_egg": "Solar Wyrm Spawn Egg",
+  "item.skywyrms.solar_wyrm_egg": "Solar Wyrm Egg",
+  "ability.skywyrms.sun_beam": "Sun Beam",
+  "element.skywyrms.solar": "Solar",
+  "element.skywyrms.solar.adjective": "Radiant",
+  "infusion.skywyrms.solar": "sunlight (burns undead, makes the target glow)",
+  "trait.skywyrms.solar": "heals in sunlight",
+  "egg.skywyrms.hint.solar": "Hatches twice as fast in direct sunlight during the day",
+  "subtitles.skywyrms.dragon.solar.ambient": "Solar Wyrm growls",
+  "subtitles.skywyrms.dragon.solar.hurt": "Solar Wyrm hurts",
+  "subtitles.skywyrms.dragon.solar.death": "Solar Wyrm dies",
+  "subtitles.skywyrms.dragon.solar.roar": "Solar Wyrm roars",
+  "subtitles.skywyrms.dragon.solar.baby": "Hatchling chirps",
+  "subtitles.skywyrms.ability.sun_beam": "Sun beam blazes"
 }
