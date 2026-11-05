@@ -1,0 +1,77 @@
+package com.pokato.skywyrms.anim;
+
+public final class AnimState {
+   public static final int TAKEOFF_WINDUP = 6;
+   public static final int LAND_TICKS = 18;
+   public static final int IDLE_NONE = 0;
+   public static final int IDLE_LOOK_L = 1;
+   public static final int IDLE_LOOK_R = 2;
+   public static final int IDLE_STRETCH = 3;
+   public static final int IDLE_YAWN = 4;
+   public static final int IDLE_SHAKE = 5;
+   public float time;
+   public float walkPos;
+   public float walkSpeed;
+   public float fly;
+   public float flapPhase;
+   public float glide;
+   public float pitch;
+   public float roll;
+   public float headYaw;
+   public float headPitch;
+   public float yawVel;
+   public float vertVel;
+   public float speed;
+   public float sit;
+   public float breath;
+   public float roar;
+   public float bite;
+   public float hurt;
+   public float stoop;
+   public float crouch;
+   public float wingLift;
+   public float leap;
+   public float flare;
+   public float land;
+   public float landPow;
+   public int idle;
+   public float idleT;
+   public float idleW;
+   public boolean saddled;
+   public String kind = "fire";
+
+   public AnimState copy() {
+      AnimState c = new AnimState();
+      c.time = this.time;
+      c.walkPos = this.walkPos;
+      c.walkSpeed = this.walkSpeed;
+      c.fly = this.fly;
+      c.flapPhase = this.flapPhase;
+      c.glide = this.glide;
+      c.pitch = this.pitch;
+      c.roll = this.roll;
+      c.headYaw = this.headYaw;
+      c.headPitch = this.headPitch;
+      c.yawVel = this.yawVel;
+      c.vertVel = this.vertVel;
+      c.speed = this.speed;
+      c.sit = this.sit;
+      c.breath = this.breath;
+      c.roar = this.roar;
+      c.bite = this.bite;
+      c.hurt = this.hurt;
+      c.stoop = this.stoop;
+      c.saddled = this.saddled;
+      c.kind = this.kind;
+      c.crouch = this.crouch;
+      c.wingLift = this.wingLift;
+      c.leap = this.leap;
+      c.flare = this.flare;
+      c.land = this.land;
+      c.landPow = this.landPow;
+      c.idle = this.idle;
+      c.idleT = this.idleT;
+      c.idleW = this.idleW;
+      return c;
+   }
+}
