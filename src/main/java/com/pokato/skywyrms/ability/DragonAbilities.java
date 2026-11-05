@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -55,6 +56,7 @@ public final class DragonAbilities {
          case LIGHTNING -> 30;
          case VENOM_SPIT -> 25;
          case VOID_BLINK -> 40;
+         case SUN_BEAM -> 35;
          default -> 0;
       };
    }
@@ -64,6 +66,7 @@ public final class DragonAbilities {
          case LIGHTNING -> 14;
          case VENOM_SPIT -> 12;
          case VOID_BLINK -> 24;
+         case SUN_BEAM -> 16;
          default -> 0;
       };
    }
@@ -73,6 +76,7 @@ public final class DragonAbilities {
          case LIGHTNING -> 34.0;
          case VENOM_SPIT -> 29.0;
          case VOID_BLINK -> 26.0;
+         case SUN_BEAM -> 30.0;
          default -> 14.5;
       };
    }
@@ -211,6 +215,7 @@ public final class DragonAbilities {
          case THORN -> ModParticles.venom();
          case VOID -> ModParticles.voidWisp();
          case TIDE -> ModParticles.tide();
+         case SOLAR -> ParticleTypes.END_ROD;
       };
    }
 
@@ -273,6 +278,13 @@ public final class DragonAbilities {
 
                if (target.isSensitiveToWater() || target.fireImmune()) {
                   target.hurtServer(level, dragon.abilityDamage(DamageTypes.MOB_ATTACK), 3.0F * power);
+               }
+               break;
+            case SOLAR:
+               target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 80, 0), dragon);
+               if (target.typeHolder().is(EntityTypeTags.UNDEAD)) {
+                  target.igniteForSeconds(4.0F);
+                  target.hurtServer(level, dragon.abilityDamage(DamageTypes.INDIRECT_MAGIC), 3.0F * power);
                }
          }
       }
@@ -457,8 +469,52 @@ public final class DragonAbilities {
          case LIGHTNING -> lightning(dragon, level, mouth);
          case VENOM_SPIT -> venom(dragon, level, mouth);
          case VOID_BLINK -> blink(dragon, level);
+         case SUN_BEAM -> sunBeam(dragon, level, mouth);
          default -> false;
       };
+   }
+
+   /**
+    * Solar wyrm: a straight beam of sunlight. It passes through every enemy on the line (up to the first
+    * solid block), blinds them briefly and makes them glow; undead take double damage and catch fire.
+    */
+   private static boolean sunBeam(DragonEntity dragon, ServerLevel level, Vec3 mouth) {
+      double range = 32.0;
+      LivingEntity user = dragon.abilityUser();
+      Vec3 from = user != dragon ? user.getEyePosition() : mouth;
+      Vec3 dir = direction(from, dragon.aimPoint(range), dragon);
+      Vec3 end = from.add(dir.scale(range));
+      BlockHitResult block = clipBlocks(dragon, from, end, Fluid.NONE);
+      if (block.getType() != Type.MISS) {
+         end = block.getLocation();
+      }
+
+      Vec3 beamEnd = end;
+      line(level, ParticleTypes.END_ROD, mouth, beamEnd, 0.35, 1, 0.05, 0.0);
+      line(level, ParticleTypes.WAX_ON, mouth, beamEnd, 0.6, 2, 0.18, 0.02);
+      line(level, ParticleTypes.GLOW, mouth, beamEnd, 0.9, 1, 0.25, 0.0);
+      level.sendParticles(ParticleTypes.END_ROD, beamEnd.x, beamEnd.y, beamEnd.z, 30, 0.6, 0.6, 0.6, 0.08);
+      level.sendParticles(ParticleTypes.END_ROD, mouth.x, mouth.y, mouth.z, 12, 0.3, 0.3, 0.3, 0.04);
+      sound(level, mouth, ModSounds.get("ability.sun_beam"), 2.5F, 0.95F + level.getRandom().nextFloat() * 0.1F);
+      accentBurst(dragon, level, beamEnd, 18);
+      float power = dragon.abilityPower();
+      AABB search = new AABB(from, beamEnd).inflate(1.5);
+
+      for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, search, dragon::canAbilityHit)) {
+         if (target != user && target.getBoundingBox().inflate(0.6).clip(from, beamEnd).isPresent()) {
+            boolean undead = target.typeHolder().is(EntityTypeTags.UNDEAD);
+            target.hurtServer(level, dragon.abilityDamage(DamageTypes.INDIRECT_MAGIC), (undead ? 20.0F : 10.0F) * power);
+            if (undead) {
+               target.igniteForSeconds(5.0F);
+            }
+
+            target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 0), dragon);
+            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0), dragon);
+            infuse(dragon, level, target);
+         }
+      }
+
+      return true;
    }
 
    private static boolean lightning(DragonEntity dragon, ServerLevel level, Vec3 mouth) {

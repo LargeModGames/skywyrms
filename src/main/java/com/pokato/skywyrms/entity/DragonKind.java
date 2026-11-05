@@ -6,7 +6,8 @@ public enum DragonKind {
    STORM("storm_wyrm", "storm", 70.0, 7.0, 4.0, 0.82, 0.27, 0.85F, DragonKind.Ability.LIGHTNING, 16771402),
    THORN("thorn_wyrm", "thorn", 110.0, 9.0, 10.0, 0.52, 0.23, 1.1F, DragonKind.Ability.VENOM_SPIT, 10215482),
    VOID("void_wyrm", "void", 90.0, 11.0, 6.0, 0.72, 0.27, 0.95F, DragonKind.Ability.VOID_BLINK, 13786111),
-   TIDE("tide_wyrm", "tide", 80.0, 8.0, 6.0, 0.62, 0.25, 0.9F, DragonKind.Ability.TIDAL_JET, 4578790);
+   TIDE("tide_wyrm", "tide", 80.0, 8.0, 6.0, 0.62, 0.25, 0.9F, DragonKind.Ability.TIDAL_JET, 4578790),
+   SOLAR("solar_wyrm", "solar", 85.0, 9.0, 6.0, 0.9, 0.29, 0.8F, DragonKind.Ability.SUN_BEAM, 16767334);
 
    private final String id;
    private final String animKey;
@@ -126,7 +127,8 @@ public enum DragonKind {
       LIGHTNING(false, "lightning"),
       VENOM_SPIT(false, "venom_spit"),
       VOID_BLINK(false, "void_blink"),
-      TIDAL_JET(true, "tidal_jet");
+      TIDAL_JET(true, "tidal_jet"),
+      SUN_BEAM(false, "sun_beam");
 
       private final boolean held;
       private final String id;

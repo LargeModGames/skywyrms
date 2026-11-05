@@ -576,6 +576,14 @@ public class DragonEntity extends TamableAnimal {
          this.entityData.set(DATA_ENERGY, shown);
       }
 
+      if (this.tickCount % 100 == 0
+         && this.hasElement(DragonKind.SOLAR)
+         && this.getHealth() < this.getMaxHealth()
+         && level.isBrightOutside()
+         && level.canSeeSky(this.blockPosition().above())) {
+         this.heal(1.0F);
+      }
+
       if (this.tickCount % 20 == 0) {
          for (Entity passenger : this.getPassengers()) {
             if (passenger instanceof LivingEntity living) {
@@ -886,6 +894,7 @@ public class DragonEntity extends TamableAnimal {
          case THORN -> 0.72F;
          case VOID -> 0.62F;
          case TIDE -> 0.98F;
+         case SOLAR -> 1.15F;
       };
    }
 
@@ -894,7 +903,7 @@ public class DragonEntity extends TamableAnimal {
          case EMBER, THORN -> 0.85F;
          case FROST, STORM -> 1.1F;
          case VOID -> 0.8F;
-         case TIDE -> 1.0F;
+         case TIDE, SOLAR -> 1.0F;
       };
    }
 
@@ -965,6 +974,7 @@ public class DragonEntity extends TamableAnimal {
          case THORN -> ParticleTypes.SPORE_BLOSSOM_AIR;
          case VOID -> ParticleTypes.REVERSE_PORTAL;
          case TIDE -> ParticleTypes.BUBBLE_POP;
+         case SOLAR -> ParticleTypes.WAX_ON;
       };
    }
 

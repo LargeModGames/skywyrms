@@ -60,6 +60,12 @@ public final class DragonAnimator {
             f.tailWave = 1.5F;
             f.neckSway = 1.2F;
             f.walkBob = 0.9F;
+            break;
+         case "solar":
+            f.flapAmp = 0.64F;
+            f.tipLag = 1.25F;
+            f.neckSway = 1.1F;
+            f.walkBob = 0.9F;
       }
 
       return f;

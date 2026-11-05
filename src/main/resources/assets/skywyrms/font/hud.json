@@ -75,7 +75,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_frost_ember.png",
+   "file": "skywyrms:font/hud/icon_ember_solar.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -84,7 +84,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_frost_frost.png",
+   "file": "skywyrms:font/hud/icon_frost_ember.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -93,7 +93,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_frost_storm.png",
+   "file": "skywyrms:font/hud/icon_frost_frost.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -102,7 +102,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_frost_thorn.png",
+   "file": "skywyrms:font/hud/icon_frost_storm.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -111,7 +111,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_frost_void.png",
+   "file": "skywyrms:font/hud/icon_frost_thorn.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -120,7 +120,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_frost_tide.png",
+   "file": "skywyrms:font/hud/icon_frost_void.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -129,7 +129,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_storm_ember.png",
+   "file": "skywyrms:font/hud/icon_frost_tide.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -138,7 +138,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_storm_frost.png",
+   "file": "skywyrms:font/hud/icon_frost_solar.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -147,7 +147,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_storm_storm.png",
+   "file": "skywyrms:font/hud/icon_storm_ember.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -156,7 +156,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_storm_thorn.png",
+   "file": "skywyrms:font/hud/icon_storm_frost.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -165,7 +165,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_storm_void.png",
+   "file": "skywyrms:font/hud/icon_storm_storm.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -174,7 +174,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_storm_tide.png",
+   "file": "skywyrms:font/hud/icon_storm_thorn.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -183,7 +183,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_thorn_ember.png",
+   "file": "skywyrms:font/hud/icon_storm_void.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -192,7 +192,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_thorn_frost.png",
+   "file": "skywyrms:font/hud/icon_storm_tide.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -201,7 +201,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_thorn_storm.png",
+   "file": "skywyrms:font/hud/icon_storm_solar.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -210,7 +210,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_thorn_thorn.png",
+   "file": "skywyrms:font/hud/icon_thorn_ember.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -219,7 +219,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_thorn_void.png",
+   "file": "skywyrms:font/hud/icon_thorn_frost.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -228,7 +228,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_thorn_tide.png",
+   "file": "skywyrms:font/hud/icon_thorn_storm.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -237,7 +237,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_void_ember.png",
+   "file": "skywyrms:font/hud/icon_thorn_thorn.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -246,7 +246,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_void_frost.png",
+   "file": "skywyrms:font/hud/icon_thorn_void.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -255,7 +255,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_void_storm.png",
+   "file": "skywyrms:font/hud/icon_thorn_tide.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -264,7 +264,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_void_thorn.png",
+   "file": "skywyrms:font/hud/icon_thorn_solar.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -273,7 +273,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_void_void.png",
+   "file": "skywyrms:font/hud/icon_void_ember.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -282,7 +282,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_void_tide.png",
+   "file": "skywyrms:font/hud/icon_void_frost.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -291,7 +291,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_tide_ember.png",
+   "file": "skywyrms:font/hud/icon_void_storm.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -300,7 +300,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_tide_frost.png",
+   "file": "skywyrms:font/hud/icon_void_thorn.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -309,7 +309,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_tide_storm.png",
+   "file": "skywyrms:font/hud/icon_void_void.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -318,7 +318,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_tide_thorn.png",
+   "file": "skywyrms:font/hud/icon_void_tide.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -327,7 +327,7 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_tide_void.png",
+   "file": "skywyrms:font/hud/icon_void_solar.png",
    "height": 11,
    "ascent": 9,
    "chars": [
@@ -336,11 +336,128 @@
   },
   {
    "type": "bitmap",
-   "file": "skywyrms:font/hud/icon_tide_tide.png",
+   "file": "skywyrms:font/hud/icon_tide_ember.png",
    "height": 11,
    "ascent": 9,
    "chars": [
     "\ue033"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_tide_frost.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue034"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_tide_storm.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue035"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_tide_thorn.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue036"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_tide_void.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue037"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_tide_tide.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue038"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_tide_solar.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue039"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_solar_ember.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue03a"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_solar_frost.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue03b"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_solar_storm.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue03c"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_solar_thorn.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue03d"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_solar_void.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue03e"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_solar_tide.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue03f"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "skywyrms:font/hud/icon_solar_solar.png",
+   "height": 11,
+   "ascent": 9,
+   "chars": [
+    "\ue040"
    ]
   },
   {

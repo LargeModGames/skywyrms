@@ -46,6 +46,7 @@ public final class ModSounds {
          "ability.frost_breath",
          "ability.tidal_jet",
          "ability.lightning",
+         "ability.sun_beam",
          "ability.venom_spit",
          "ability.venom_splat",
          "ability.void_blink",
