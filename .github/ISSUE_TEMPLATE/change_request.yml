@@ -1,0 +1,47 @@
+name: Change request
+description: A new feature, a balance change, or a change to a model or texture.
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of change?
+      options:
+        - Model or texture
+        - Gameplay or balance
+        - New feature
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: dragon
+    attributes:
+      label: Which dragon?
+      multiple: true
+      options:
+        - Ember wyrm
+        - Frost wyrm
+        - Storm wyrm
+        - Thorn wyrm
+        - Tide wyrm
+        - Void wyrm
+        - Hybrid
+        - Egg
+        - Not dragon specific
+  - type: textarea
+    id: what
+    attributes:
+      label: What should change
+      description: Describe the result you want. For models, say which body parts and how.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What problem does this solve, or what does it add for players?
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Sketches, screenshots, or Blockbench exports.

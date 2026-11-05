@@ -1,0 +1,64 @@
+name: Bug report
+description: Something in Skywyrms is broken.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What went wrong, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Tame a frost wyrm
+        2. Ride it and use the breath ability
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      options:
+        - On the server (Large's dungeon)
+        - In single player
+        - Both
+        - Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: dragon
+    attributes:
+      label: Which dragon?
+      multiple: true
+      options:
+        - Ember wyrm
+        - Frost wyrm
+        - Storm wyrm
+        - Thorn wyrm
+        - Tide wyrm
+        - Void wyrm
+        - Hybrid
+        - Egg
+        - Not dragon specific
+  - type: input
+    id: version
+    attributes:
+      label: Mod version
+      description: From the jar name or the mods list, for example 1.2.3.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Paste or attach `logs/latest.log` and any crash report.
+      render: text
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or video
