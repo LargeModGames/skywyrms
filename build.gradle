@@ -86,6 +86,13 @@ tasks.register("runProductionServerGameTest", net.fabricmc.loom.task.prod.Server
 	runDir = layout.buildDirectory.dir("run/productionServer")
 }
 
+tasks.register("runProductionClientGameTest", net.fabricmc.loom.task.prod.ClientProductionRunTask) {
+	mods.from(gametestJar)
+	jvmArgs.add("-Dfabric.client.gametest")
+	jvmArgs.add("-Dfabric.client.gametest.disableNetworkSynchronizer=true")
+	runDir = layout.buildDirectory.dir("run/productionClient")
+}
+
 loom {
 	runs {
 		gameTest {
