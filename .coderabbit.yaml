@@ -1,0 +1,134 @@
+# yaml-language-server: $schema=https://storage.googleapis.com/coderabbit_public_assets/schema.v2.json
+language: en-US
+tone_instructions: >-
+  Write plainly and directly. Do not use em-dashes; use commas, colons, or
+  separate sentences instead. Prefer concrete detail over praise.
+
+reviews:
+  profile: chill
+  # Approve only once review comments are resolved and checks pass.
+  request_changes_workflow: true
+  poem: false
+
+  path_filters:
+    - "!build/**"
+    - "!run/**"
+    - "!.gradle/**"
+    - "!logs/**"
+    - "!gradle/wrapper/**"
+
+  path_instructions:
+    - path: "src/main/java/**/*.java"
+      instructions: |
+        These sources were decompiled from Skywyrms 1.2.3 by pokato (MIT). Odd
+        local names and control flow come from the decompiler and are not
+        findings by themselves.
+
+        A pull request that says it is a cleanup or refactor must not change
+        behaviour. Point to the Bytecode report job on the run page and flag
+        any changed class the description does not explain.
+
+        Only `com.pokato.skywyrms.client` and
+        `fabric/SkywyrmsFabricClient.java` may import `net.minecraft.client` or
+        `com.pokato.skywyrms.client` classes. Any other import of them crashes
+        the dedicated server, so flag it.
+
+        `DragonAnimator` looks bones up by name and silently ignores a missing
+        one. A renamed or removed bone name must also change
+        `ANIMATED_BONES` in `src/test/java/com/pokato/skywyrms/entity/GeoDataTest.java`.
+
+    - path: "src/main/resources/assets/skywyrms/dragon_geo/**"
+      instructions: |
+        Each file is one dragon model in the mod's own format, loaded by
+        `entity/GeoData.java`. Check that a part's parent appears before it,
+        that bone names used by `anim/DragonAnimator.java` still exist, and
+        that every cube's UV area stays inside `texture_size`.
+
+        The server reads `scale`, `seat`, `bbox` and the mouth bone too, so a
+        change here needs the new jar on the server and every client. Say so if
+        the description does not.
+
+    - path: "src/main/resources/assets/skywyrms/lang/**"
+      instructions: |
+        Keys are built in code from `DragonKind` ids and elements. Flag a removed
+        or renamed key that the Java code still uses.
+
+    - path: "src/main/resources/fabric.mod.json"
+      instructions: |
+        `version` must stay `${version}`; it is filled from `mod_version` in
+        `gradle.properties`. `license` must stay MIT.
+
+    - path: "LICENSE"
+      instructions: |
+        The MIT license and "Copyright (c) 2026 pokato" must not change. Flag
+        any edit.
+
+    - path: "{build.gradle,settings.gradle,gradle.properties}"
+      instructions: |
+        Loom, Fabric Loader and Fabric API versions come from the `26.3` branch
+        of FabricMC/fabric-example-mod. The rule that copies `LICENSE` into
+        every Jar task as `LICENSE_skywyrms` must stay. `mod_version` changes
+        only in a release commit, not in feature pull requests.
+
+    - path: "src/{test,gametest}/**"
+      instructions: |
+        Tests must be deterministic: seed every `RandomSource` and do not
+        depend on wall-clock time. A server gametest must end with
+        `helper.succeed()` or `helper.succeedWhen(...)`, and should assert the
+        effect it tests, not only that nothing crashed.
+
+        `DragonClientGameTest` runs only locally (`runClientGameTest`), because
+        GitHub runners cannot open an OpenGL window. A pull request with visual
+        changes should say it was run and that the screenshots were checked.
+
+    - path: ".github/workflows/**"
+      instructions: |
+        Branch protection on `main` requires the checks "Build and tests" and
+        "Production server tests" by job name. Renaming or removing either job
+        blocks every pull request until the protection rule is updated, so say
+        so.
+
+  suggested_reviewers: false
+  in_progress_fortune: false
+
+  tools:
+    github-checks:
+      # Default is 90s, but the build and server jobs take about 2 minutes, so
+      # CodeRabbit would stop waiting and review without CI results.
+      timeout_ms: 600000
+
+  pre_merge_checks:
+    # Decompiled code has no Javadoc; the default threshold would warn on
+    # every pull request.
+    docstrings:
+      mode: "off"
+    title:
+      mode: warning
+      requirements: >-
+        Title is a short imperative sentence starting with a capitalised verb,
+        like the commits in this repo (Add, Fix, Run, Document, List). No
+        conventional-commit prefix.
+    # A PR that says `Fixes #N` auto-closes the issue on merge, so a fix that
+    # covers only part of the issue silently loses the remainder.
+    issue_assessment:
+      mode: error
+
+  finishing_touches:
+    simplify:
+      enabled: true
+
+  auto_review:
+    enabled: true
+    drafts: true
+    # Do not silently stop reviewing long-running branches.
+    auto_pause_after_reviewed_commits: 0
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    # Listed explicitly because an explicit list may replace CodeRabbit's
+    # built-in defaults rather than extend them.
+    filePatterns:
+      - "**/CLAUDE.md"
+      - "**/AGENTS.md"
+      - "CONTRIBUTING.md"
