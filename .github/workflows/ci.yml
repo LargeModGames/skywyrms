@@ -98,10 +98,12 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/setup-gradle@v4
-      - run: sudo apt-get update && sudo apt-get install -y xvfb
+      - run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri
 
       # Renders every dragon, a hybrid and an egg, rides a dragon, and uses an ability on a dedicated server.
-      - run: ./gradlew runProductionClientGameTest
+      # OpenGL needs a 24-bit screen; xvfb-run's default 8-bit screen has no GLX visual and the client hangs.
+      - run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runProductionClientGameTest
+        timeout-minutes: 15
 
       - uses: actions/upload-artifact@v4
         if: always()

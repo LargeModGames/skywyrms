@@ -87,6 +87,8 @@ tasks.register("runProductionServerGameTest", net.fabricmc.loom.task.prod.Server
 }
 
 tasks.register("runProductionClientGameTest", net.fabricmc.loom.task.prod.ClientProductionRunTask) {
+	// CI wraps Gradle in its own 24-bit Xvfb screen; Loom's xvfb-run uses an 8-bit one without OpenGL.
+	useXVFB = false
 	mods.from(gametestJar)
 	jvmArgs.add("-Dfabric.client.gametest")
 	jvmArgs.add("-Dfabric.client.gametest.disableNetworkSynchronizer=true")
