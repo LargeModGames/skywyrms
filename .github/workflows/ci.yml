@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Compiles, runs the JUnit tests and the server gametests (dev environment).
+      - run: ./gradlew build
+
+      - name: Check the jar
+        run: |
+          jar=$(ls build/libs/skywyrms-*-fabric-*.jar | grep -v -- '-sources\|-gametest')
+          version=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          for j in build/libs/*.jar; do
+            unzip -l "$j" | grep -q 'LICENSE_skywyrms' || { echo "::error::$j has no LICENSE_skywyrms"; exit 1; }
+          done
+          unzip -p "$jar" LICENSE_skywyrms | grep -q 'Copyright (c) 2026 pokato' || { echo "::error::license text changed"; exit 1; }
+          unzip -p "$jar" fabric.mod.json | jq -e --arg v "$version" '.id == "skywyrms" and .version == $v' \
+            || { echo "::error::fabric.mod.json id or version is wrong"; exit 1; }
+          echo "Checked $jar (version $version)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skywyrms-jar
+          path: build/libs/*.jar
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-reports
+          path: |
+            build/reports/
+            build/test-results/
+            build/run/gameTest/logs/
+            build/run/gameTest/crash-reports/
+
+  server:
+    name: Production server tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+
+      # The gametests again, on a real Fabric server with the built jar.
+      - run: ./gradlew runProductionServerGameTest
+
+      # A real dedicated server: world generation, every dragon ticking for five seconds, clean stop.
+      - run: ./gradlew runProductionServerSmoke
+      - name: Check the smoke log
+        run: |
+          log=build/run/productionSmoke/logs/latest.log
+          grep -q 'SKYWYRMS SMOKE PASSED' "$log" || { grep -n 'SKYWYRMS SMOKE' "$log"; echo "::error::smoke test did not pass"; exit 1; }
+          if grep -n 'at .*com\.pokato\.skywyrms' "$log"; then echo "::error::exception from Skywyrms code in the server log"; exit 1; fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: server-logs
+          path: |
+            build/run/productionServer/logs/
+            build/run/productionServer/crash-reports/
+            build/run/productionSmoke/logs/
+            build/run/productionSmoke/crash-reports/
+
+  bytecode:
+    name: Bytecode report
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build this branch and the base branch
+        run: |
+          ./gradlew jar
+          git worktree add ../base "origin/${{ github.base_ref }}"
+          (cd ../base && chmod +x gradlew && ./gradlew jar)
+      - name: Compare
+        run: |
+          pick() { ls "$1"/build/libs/skywyrms-*-fabric-*.jar | grep -v -- '-sources\|-gametest'; }
+          bash .github/scripts/bytecode-diff.sh "$(pick ../base)" "$(pick .)" bytecode-report
+          cat bytecode-report/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bytecode-report
+          path: bytecode-report/
