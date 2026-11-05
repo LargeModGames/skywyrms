@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "skywyrms",
+  "version": "${version}",
+  "name": "Skywyrms",
+  "description": "Six rideable, flyable elemental dragons. Tame them, saddle them, take to the sky and use their breath.",
+  "authors": ["pokato"],
+  "license": "MIT",
+  "icon": "skywyrms.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.pokato.skywyrms.fabric.SkywyrmsFabric"],
+    "client": ["com.pokato.skywyrms.fabric.SkywyrmsFabricClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": ">=0.161.0"
+  }
+}

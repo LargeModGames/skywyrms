@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "skywyrms:item/void_wyrm_egg"
+  }
+}
