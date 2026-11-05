@@ -8,6 +8,7 @@ files: it still loads `assets/skywyrms/dragon_geo/*.json`.
 | `storm_wyrm.bbmodel` | The storm wyrm exactly as the mod defines it (115 parts, 220 cubes). |
 | `crimson_wyrm.bbmodel` + `.png` | Design variant: neck and tail twice as long and thinner, slimmer body, no front legs (wyvern), red texture. |
 | `thunder_wyrm.bbmodel` + `.png` | Crimson shape with a storm look: dark storm-cloud body, bright yellow veins with a blue glow, zig-zag lightning spines, glowing kinked horn tips and tail prongs, forked lightning on the wing membranes. |
+| `solar_wyrm.bbmodel` + `.png` | Light/sun element, storm wyrm body at the same size: ivory scales with gold veins and an orange glow, a sunburst crown of seven rays behind the head, tall golden sun-ray spines, golden horns, a fan of rays on the tail tip, sunset wing membranes with light rays. |
 
 Textures are embedded in each `.bbmodel`. The saddle is hidden in the variants. Wings are shown in the rest pose
 (spread); in game `DragonAnimator` folds them.
@@ -21,6 +22,7 @@ powershell -ExecutionPolicy Bypass -File blockbench\tools\build.ps1
 - `tools/geo2bb.ps1` converts a mod geo file to `.bbmodel` (Y-up, X-mirrored, absolute pivots, box UV).
 - `tools/crimson.ps1` builds the crimson shape and texture from the storm wyrm.
 - `tools/thunder.ps1` builds the thunder look on top of the crimson shape.
+- `tools/solar.ps1` builds the solar wyrm from the storm wyrm.
 
 ## Using a variant in game
 

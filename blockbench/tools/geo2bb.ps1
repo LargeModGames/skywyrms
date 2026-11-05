@@ -1,4 +1,4 @@
-﻿param([string]$Geo, [string]$Tex, [string]$Out, [string[]]$Hide = @())
+﻿param([string]$Geo, [string]$Tex, [string]$Out, [string[]]$Hide = @(), [string]$Glow = '')
 $ErrorActionPreference = 'Stop'
 $inv = [Globalization.CultureInfo]::InvariantCulture
 $gd = Get-Content $Geo -Raw | ConvertFrom-Json
@@ -57,6 +57,11 @@ $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($Tex))
 $texName = [IO.Path]::GetFileName($Tex)
 $tw = $gd.texture_size[0]; $th = $gd.texture_size[1]
 $texJson = "{`"path`":`"`",`"name`":`"$texName`",`"folder`":`"entity`",`"namespace`":`"skywyrms`",`"id`":`"0`",`"width`":$tw,`"height`":$th,`"uv_width`":$tw,`"uv_height`":$th,`"particle`":false,`"render_mode`":`"default`",`"render_sides`":`"auto`",`"visible`":true,`"mode`":`"bitmap`",`"saved`":true,`"uuid`":`"$([guid]::NewGuid())`",`"source`":`"data:image/png;base64,$b64`"}"
+if ($Glow) {
+    # glow overlay: Blockbench draws "layered" textures on top of the base one
+    $g64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($Glow))
+    $texJson += ",{`"path`":`"`",`"name`":`"$([IO.Path]::GetFileName($Glow))`",`"folder`":`"entity`",`"namespace`":`"skywyrms`",`"id`":`"1`",`"width`":$tw,`"height`":$th,`"uv_width`":$tw,`"uv_height`":$th,`"particle`":false,`"render_mode`":`"layered`",`"render_sides`":`"auto`",`"visible`":true,`"mode`":`"bitmap`",`"saved`":true,`"uuid`":`"$([guid]::NewGuid())`",`"source`":`"data:image/png;base64,$g64`"}"
+}
 
 $modelName = [IO.Path]::GetFileNameWithoutExtension($Out)
 $json = "{`"meta`":{`"format_version`":`"5.0`",`"model_format`":`"modded_entity`",`"box_uv`":true},`"name`":`"$modelName`",`"model_identifier`":`"$modelName`",`"modded_entity_entity_class`":`"`",`"modded_entity_version`":`"1.17`",`"modded_entity_flip_y`":true,`"visible_box`":[1,1,0],`"variable_placeholders`":`"`",`"variable_placeholder_buttons`":[],`"timeline_setups`":[],`"unhandled_root_fields`":{},`"resolution`":{`"width`":$tw,`"height`":$th},`"elements`":[$($elements -join ',')],`"outliner`":[$(($order | ForEach-Object { GroupJson $_ }) -join ',')],`"textures`":[$texJson]}"

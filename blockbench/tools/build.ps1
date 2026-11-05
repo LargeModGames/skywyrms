@@ -15,3 +15,7 @@ New-Item -ItemType Directory -Force $tmp | Out-Null
 
 & "$tools\thunder.ps1" -SrcGeo "$tmp\crimson_wyrm.json" -SrcTex $tex -OutGeo "$tmp\thunder_wyrm.json" -OutTex "$out\thunder_wyrm.png"
 & "$tools\geo2bb.ps1" -Geo "$tmp\thunder_wyrm.json" -Tex "$out\thunder_wyrm.png" -Out "$out\thunder_wyrm.bbmodel" -Hide saddle
+
+& "$tools\solar.ps1" -SrcGeo $geo -SrcTex $tex -OutGeo "$tmp\solar_wyrm.json" -OutTex "$out\solar_wyrm.png" `
+    -SrcGlow (Join-Path $assets 'textures\entity\storm_wyrm_glow.png') -OutGlow "$out\solar_wyrm_glow.png"
+& "$tools\geo2bb.ps1" -Geo "$tmp\solar_wyrm.json" -Tex "$out\solar_wyrm.png" -Out "$out\solar_wyrm.bbmodel" -Hide saddle -Glow "$out\solar_wyrm_glow.png"
