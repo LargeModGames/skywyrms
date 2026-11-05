@@ -93,3 +93,18 @@ loom {
 		}
 	}
 }
+
+def smokeRunDir = layout.buildDirectory.dir("run/productionSmoke")
+
+def acceptSmokeEula = tasks.register("acceptSmokeEula", WriteProperties) {
+	destinationFile = smokeRunDir.map { it.file("eula.txt") }
+	property("eula", "true")
+}
+
+tasks.register("runProductionServerSmoke", net.fabricmc.loom.task.prod.ServerProductionRunTask) {
+	dependsOn acceptSmokeEula
+	mods.from(gametestJar)
+	jvmArgs.add("-Dskywyrms.smoke=true")
+	programArgs.add("--nogui")
+	runDir = smokeRunDir
+}

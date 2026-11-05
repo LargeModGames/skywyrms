@@ -6,6 +6,7 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
+    "main": ["com.pokato.skywyrms.gametest.ServerSmoke"],
     "fabric-gametest": ["com.pokato.skywyrms.gametest.DragonGameTests"]
   },
   "depends": {
