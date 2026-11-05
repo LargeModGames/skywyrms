@@ -17,7 +17,8 @@ Closes #
 <!-- What did you test, and how? What could you not test? -->
 
 - [ ] `.\gradlew build` passes
-- [ ] CI is green; for visual changes I looked at the `client-screenshots` artifact
+- [ ] CI is green
+- [ ] Visual changes: ran `.\gradlew runClientGameTest` and looked at the screenshots
 - [ ] Tested in game (`runClient`)
 - [ ] Tested on a dedicated server (`runServer`)
 - [ ] Model changes: idle, walk, fly, sit, rider and breath checked for every dragon touched

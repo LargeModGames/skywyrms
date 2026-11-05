@@ -87,33 +87,6 @@ jobs:
             build/run/productionSmoke/logs/
             build/run/productionSmoke/crash-reports/
 
-  client:
-    name: Client gametest
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 25
-      - uses: gradle/actions/setup-gradle@v4
-      - run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri
-
-      # Renders every dragon, a hybrid and an egg, rides a dragon, and uses an ability on a dedicated server.
-      # OpenGL needs a 24-bit screen; xvfb-run's default 8-bit screen has no GLX visual and the client hangs.
-      - run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runProductionClientGameTest
-        timeout-minutes: 15
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: client-screenshots
-          path: |
-            build/run/productionClient/screenshots/
-            build/run/productionClient/logs/
-            build/run/productionClient/crash-reports/
-
   bytecode:
     name: Bytecode report
     if: github.event_name == 'pull_request'

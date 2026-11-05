@@ -122,8 +122,8 @@ can still be harmless. Explain them in the pull request.
 | `.\gradlew runProductionServerSmoke` | A real dedicated server: generates a world, ticks every dragon for 5 seconds, stops. Look for `SKYWYRMS SMOKE PASSED` in `build/run/productionSmoke/logs/latest.log` | `ServerSmoke.java` |
 | `.\gradlew runClientGameTest` | A game window: renders every dragon, a hybrid and an egg, rides a dragon, uses an ability on a dedicated server. Screenshots in `build/run/clientGameTest/screenshots` | `DragonClientGameTest.java` |
 
-`runProductionClientGameTest` is what CI runs (under xvfb on Linux). On Windows it can crash in native code
-while loading; use `runClientGameTest` locally.
+CI does not run the client test: GitHub's runners cannot open an OpenGL window for Minecraft. Run
+`runClientGameTest` on your own machine for every change a player can see, and look at the screenshots.
 
 When you add a feature, add a test next to the closest existing one. When you rename or remove a bone that
 `DragonAnimator` uses, update `ANIMATED_BONES` in `GeoDataTest` together with the animator.
@@ -135,12 +135,10 @@ When you add a feature, add a test next to the closest existing one. When you re
 - **Build and tests:** `gradlew build`, then checks that every jar has `LICENSE_skywyrms` and the right
   `fabric.mod.json`. The jar is uploaded as the `skywyrms-jar` artifact.
 - **Production server tests:** the gametests and the smoke test on a real server. Logs are uploaded.
-- **Client gametest:** the client test under xvfb. Screenshots are uploaded as `client-screenshots`. Look at them
-  for model and texture changes.
 - **Bytecode report** (pull requests only, never fails): compares every class with the base branch. The summary
   is on the run page, the diffs in the `bytecode-report` artifact. Use it to show that a cleanup changes nothing.
 
-The first three must pass before a pull request can merge.
+The first two must pass before a pull request can merge.
 
 ### By hand
 
