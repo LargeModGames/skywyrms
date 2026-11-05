@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "skywyrms-test",
+  "version": "1.0.0",
+  "name": "Skywyrms tests",
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": ["com.pokato.skywyrms.gametest.DragonGameTests"]
+  },
+  "depends": {
+    "skywyrms": "*"
+  }
+}

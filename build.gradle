@@ -4,6 +4,16 @@ plugins {
 
 version = "${project.mod_version}-fabric-${project.minecraft_version}"
 
+fabricApi {
+	configureTests {
+		createSourceSet = true
+		modId = "skywyrms-test"
+		enableGameTests = true
+		enableClientGameTests = true
+		eula = true
+	}
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -11,6 +21,7 @@ dependencies {
 
 	testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+	productionRuntimeMods "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
 processResources {
@@ -61,4 +72,24 @@ jar {
 
 test {
 	useJUnitPlatform()
+}
+
+def gametestJar = tasks.register("gametestJar", Jar) {
+	archiveClassifier = "gametest"
+	from sourceSets.gametest.output
+}
+
+tasks.register("runProductionServerGameTest", net.fabricmc.loom.task.prod.ServerProductionRunTask) {
+	mods.from(gametestJar)
+	jvmArgs.add("-Dfabric-api.gametest")
+	programArgs.add("--nogui")
+	runDir = layout.buildDirectory.dir("run/productionServer")
+}
+
+loom {
+	runs {
+		gameTest {
+			vmArg "-Dfabric-api.gametest.report-file=${layout.buildDirectory.file("test-results/gametest/TEST-gametest.xml").get().asFile}"
+		}
+	}
 }
