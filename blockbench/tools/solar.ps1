@@ -41,13 +41,10 @@ foreach ($p in $gd.parts) {
         }
     }
     if ($p.name -match '^deco_prong_') { $p.cubes = @() }
-}
-$gd.parts = $out.ToArray()
-
-foreach ($p in $gd.parts) {
     if ($p.name -match '^deco_hornb?_[LR]_\d$') { foreach ($c in $p.cubes) { $c.uv = $GOLD } }   # golden horns
     if ($p.name -eq 'body') { $p.cubes[7].uv = $SUN }                                              # chest plate (10x9x2, front)
 }
+$gd.parts = $out.ToArray()
 $gd.kind = 'solar'
 [IO.File]::WriteAllText($OutGeo, ($gd | ConvertTo-Json -Depth 10 -Compress), (New-Object Text.UTF8Encoding $false))
 

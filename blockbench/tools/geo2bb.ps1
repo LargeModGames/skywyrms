@@ -41,8 +41,7 @@ foreach ($p in $gd.parts) {
             "`"$_`":{`"uv`":" + (Arr @(($u + $f[0]), ($v + $f[1]), ($u + $f[0] + $f[2]), ($v + $f[1] + $f[3]))) + ",`"texture`":0}" }) -join ','
         $uuid = [guid]::NewGuid().ToString()
         $name = if ($p.cubes.Count -gt 1) { "$($p.name)_$i" } else { $p.name }
-        $inf = if ($c.inflate) { F $c.inflate } else { '0' }
-        $elements.Add("{`"name`":`"$(Esc $name)`",`"box_uv`":true,`"rescale`":false,`"locked`":false,`"render_order`":`"default`",`"allow_mirror_modeling`":true,`"from`":$(Arr $from),`"to`":$(Arr $to),`"autouv`":0,`"color`":$($i % 8),`"origin`":$(Arr $origin),`"uv_offset`":[$u,$v],`"mirror_uv`":$($mir.ToString().ToLower()),`"inflate`":$inf,`"faces`":{$fj},`"type`":`"cube`",`"visibility`":$(($Hide -notcontains $p.name).ToString().ToLower()),`"uuid`":`"$uuid`"}")
+        $elements.Add("{`"name`":`"$(Esc $name)`",`"box_uv`":true,`"rescale`":false,`"locked`":false,`"render_order`":`"default`",`"allow_mirror_modeling`":true,`"from`":$(Arr $from),`"to`":$(Arr $to),`"autouv`":0,`"color`":$($i % 8),`"origin`":$(Arr $origin),`"uv_offset`":[$u,$v],`"mirror_uv`":$($mir.ToString().ToLower()),`"inflate`":$(F $c.inflate),`"faces`":{$fj},`"type`":`"cube`",`"visibility`":$(($Hide -notcontains $p.name).ToString().ToLower()),`"uuid`":`"$uuid`"}")
         $g.children.Add($uuid)
         $i++
     }
