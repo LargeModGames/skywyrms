@@ -151,6 +151,8 @@ public class DragonGameTests {
 		DragonAbilities.breathTick(dragon, helper.getLevel(), 3);
 		helper.getLevel().removeBlock(wall, false);
 		helper.assertTrue(pig.getHealth() == pig.getMaxHealth(), "pig behind the wall was hit");
+		DragonAbilities.breathTick(dragon, helper.getLevel(), 13);
+		helper.assertTrue(pig.getHealth() < pig.getMaxHealth(), "pig without the wall was not hit");
 		helper.succeed();
 	}
 
