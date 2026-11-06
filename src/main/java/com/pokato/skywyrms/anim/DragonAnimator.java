@@ -68,7 +68,7 @@ public final class DragonAnimator {
             f.neckSway = 1.1F;
             f.walkBob = 0.9F;
             f.hoverTilt = 0.14F;
-            f.hoverBob = 1.8F;
+            f.hoverBob = 0.45F;
             f.hoverAmp = 0.32F;
             f.hoverSway = 1.0F;
             f.wingWave = 1.0F;
