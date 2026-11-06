@@ -58,6 +58,10 @@ public final class DragonAbilities {
    private DragonAbilities() {
    }
 
+   private static boolean sunBeamHit(int breathTick) {
+      return breathTick % SUN_BEAM_PERIOD == SUN_BEAM_HIT;
+   }
+
    public static int cost(DragonKind.Ability ability) {
       return switch (ability) {
          case LIGHTNING -> 30;
@@ -526,7 +530,7 @@ public final class DragonAbilities {
          sound(level, dragon.mouthPosition(), ModSounds.get("ability.sun_beam"), 1.4F, 1.1F + random.nextFloat() * 0.1F);
       }
 
-      if (tick % SUN_BEAM_PERIOD != SUN_BEAM_HIT) {
+      if (!sunBeamHit(tick)) {
          return;
       }
 
@@ -570,7 +574,7 @@ public final class DragonAbilities {
       Vec3 v = u.cross(dir);
       float t = dragon.tickCount;
       double pulse = 0.5 + 0.5 * Math.sin(t * 0.55);
-      boolean flare = dragon.breathAge() % SUN_BEAM_PERIOD == SUN_BEAM_HIT;
+      boolean flare = sunBeamHit(dragon.breathAge());
 
       // two spiral strands twisting along the beam (every other tick keeps the particle count sane)
       if (dragon.tickCount % 2 == 0) {

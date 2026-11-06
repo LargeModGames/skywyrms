@@ -4,20 +4,19 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.pokato.skywyrms.ability.DragonAbilities;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.phys.Vec3;
 
 /** Draws the sun beam as full-bright tubes that flare wider on every damage tick. */
 public final class SunBeamRenderer {
-   private static final Identifier TEXTURE = Identifier.withDefaultNamespace("textures/entity/beacon/beacon_beam.png");
    private static final int SIDES = 10;
-   private static final RenderType CORE = RenderTypes.beaconBeam(TEXTURE, false);
-   private static final RenderType GLOW = RenderTypes.beaconBeam(TEXTURE, true);
+   private static final RenderType CORE = RenderTypes.beaconBeam(BeaconRenderer.BEAM_LOCATION, false);
+   private static final RenderType GLOW = RenderTypes.beaconBeam(BeaconRenderer.BEAM_LOCATION, true);
 
    private SunBeamRenderer() {
    }

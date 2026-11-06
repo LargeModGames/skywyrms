@@ -45,7 +45,7 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
       state.blood = entity.blood();
       state.riderView = entity.localRiderFirstPerson();
       entity.anim.fill(state.anim, entity, partialTick);
-      state.beam = this.kind.ability() == DragonKind.Ability.SUN_BEAM && entity.isBreathing() && entity.isAlive();
+      state.beam = this.beaming(entity);
       if (state.beam) {
          // relative to the entity's current position, so the beam follows the smoothly interpolated model
          DragonAbilities.SunBeam line = DragonAbilities.sunBeamLine(entity);
@@ -83,12 +83,16 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
 
    protected AABB getBoundingBoxForCulling(DragonEntity entity, float partialTick) {
       AABB box = entity.renderBounds();
-      if (this.kind.ability() == DragonKind.Ability.SUN_BEAM && entity.isBreathing()) {
+      if (this.beaming(entity)) {
          // keep drawing the dragon (and its beam) while only the beam is on screen
          Vec3 end = DragonAbilities.sunBeamLine(entity).end();
-         box = box.minmax(new AABB(end, end).inflate(2.0));
+         box = box.minmax(AABB.ofSize(end, 4.0, 4.0, 4.0));
       }
 
       return box;
+   }
+
+   private boolean beaming(DragonEntity entity) {
+      return this.kind.ability() == DragonKind.Ability.SUN_BEAM && entity.isBreathing() && entity.isAlive();
    }
 }
