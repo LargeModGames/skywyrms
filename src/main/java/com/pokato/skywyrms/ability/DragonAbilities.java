@@ -599,7 +599,7 @@ public final class DragonAbilities {
 
       Vec3 dir = delta.scale(1.0 / length);
       Vec3 u = beamSide(dir);
-      Vec3 v = u.cross(dir).normalize();
+      Vec3 v = u.cross(dir);
       float t = dragon.tickCount;
       double pulse = 0.5 + 0.5 * Math.sin(t * 0.55);
       boolean flare = dragon.breathAge() % SUN_BEAM_PERIOD == SUN_BEAM_HIT;
@@ -657,7 +657,7 @@ public final class DragonAbilities {
       level.addParticle(ParticleTypes.END_ROD, true, false, mouth.x, mouth.y, mouth.z, 0.0, 0.0, 0.0);
       for (int i = 0; i < 8; i++) {
          double a = t * 0.8 + Math.PI * 2.0 * i / 8;
-         Vec3 ring = i % 2 == 0 ? u.scale(Math.cos(a)).add(v.scale(Math.sin(a))) : u.scale(Math.cos(a)).add(dir.scale(Math.sin(a)));
+         Vec3 ring = u.scale(Math.cos(a)).add((i % 2 == 0 ? v : dir).scale(Math.sin(a)));
          Vec3 q = mouth.add(ring.scale(0.8 + 0.2 * pulse));
          level.addParticle(ParticleTypes.WAX_ON, true, false, q.x, q.y, q.z, 0.0, 0.0, 0.0);
       }

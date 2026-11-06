@@ -16,6 +16,8 @@ import net.minecraft.world.phys.Vec3;
 public final class SunBeamRenderer {
    private static final Identifier TEXTURE = Identifier.withDefaultNamespace("textures/entity/beacon/beacon_beam.png");
    private static final int SIDES = 10;
+   private static final RenderType CORE = RenderTypes.beaconBeam(TEXTURE, false);
+   private static final RenderType GLOW = RenderTypes.beaconBeam(TEXTURE, true);
 
    private SunBeamRenderer() {
    }
@@ -31,18 +33,18 @@ public final class SunBeamRenderer {
 
       Vec3 dir = axis.scale(1.0 / length);
       Vec3 u = DragonAbilities.beamSide(dir);
-      Vec3 w = u.cross(dir).normalize();
+      Vec3 w = u.cross(dir);
       float t = state.beamTime;
       float pulse = 0.5F + 0.5F * (float)Math.sin(t * 0.55F);
       float flare = DragonAbilities.sunBeamFlare(t);
       float scroll = -t * 0.35F;
       float vLen = (float)length * 0.3F;
 
-      tube(poseStack, collector, RenderTypes.beaconBeam(TEXTURE, false), start, end, u, w,
+      tube(poseStack, collector, CORE, start, end, u, w,
          0.32F + 0.08F * pulse + 0.15F * flare, 0xFFFFF8E0, scroll, vLen, false);
-      tube(poseStack, collector, RenderTypes.beaconBeam(TEXTURE, true), start, end, u, w,
+      tube(poseStack, collector, GLOW, start, end, u, w,
          0.85F + 0.3F * pulse + 0.6F * flare, ARGB.color(110 + (int)(90 * flare), 0xFFD24A), scroll * 0.7F, vLen, true);
-      tube(poseStack, collector, RenderTypes.beaconBeam(TEXTURE, true), start, end, u, w,
+      tube(poseStack, collector, GLOW, start, end, u, w,
          1.7F + 0.5F * pulse + 1.2F * flare, ARGB.color(45 + (int)(70 * flare), 0xFFA21E), scroll * 0.4F, vLen * 0.5F, true);
    }
 
