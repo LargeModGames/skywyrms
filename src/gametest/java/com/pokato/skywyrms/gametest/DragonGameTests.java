@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
@@ -123,6 +124,16 @@ public class DragonGameTests {
 
 			helper.succeed();
 		});
+	}
+
+	@GameTest
+	public void sunBeamHitsPointBlank(GameTestHelper helper) {
+		DragonEntity dragon = spawn(helper, DragonKind.SOLAR);
+		LivingEntity pig = helper.spawn(EntityTypes.PIG, helper.relativeVec(dragon.mouthPosition()).subtract(0, 0.45, 0));
+		dragon.setTarget(pig);
+		DragonAbilities.breathTick(dragon, helper.getLevel(), 3);
+		helper.assertTrue(pig.getHealth() < pig.getMaxHealth(), "pig at the mouth was not hit");
+		helper.succeed();
 	}
 
 	/** Void blink jumps toward its target, so the target floats above the test area where the path is clear. */

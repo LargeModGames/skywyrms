@@ -550,7 +550,8 @@ public final class DragonAbilities {
       AABB search = new AABB(from, end).inflate(SUN_BEAM_WIDTH + 1.0);
 
       for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, search, dragon::canAbilityHit)) {
-         if (target != user && target.getBoundingBox().inflate(SUN_BEAM_WIDTH).clip(from, end).isPresent()) {
+         AABB reach = target.getBoundingBox().inflate(SUN_BEAM_WIDTH);
+         if (target != user && (reach.contains(from) || reach.clip(from, end).isPresent())) {
             boolean undead = target.typeHolder().is(EntityTypeTags.UNDEAD);
             target.hurtServer(level, dragon.abilityDamage(DamageTypes.INDIRECT_MAGIC), (undead ? 16.0F : 8.0F) * power);
             if (undead) {
