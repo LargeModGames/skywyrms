@@ -597,8 +597,7 @@ public class DragonEntity extends TamableAnimal {
       if (this.tickCount % 100 == 0
          && this.hasElement(DragonKind.SOLAR)
          && this.getHealth() < this.getMaxHealth()
-         && level.isBrightOutside()
-         && level.canSeeSky(this.blockPosition().above())) {
+         && inSunlight(level, this.blockPosition())) {
          this.heal(1.0F);
       }
 
@@ -772,6 +771,11 @@ public class DragonEntity extends TamableAnimal {
       }
 
       return this.rig.mouth(this);
+   }
+
+   /** Daytime with open sky above: solar wyrms heal and solar eggs incubate here. */
+   public static boolean inSunlight(Level level, BlockPos pos) {
+      return level.isBrightOutside() && level.canSeeSky(pos.above());
    }
 
    public static Vec3 viewVector(float xRot, float yRot) {
