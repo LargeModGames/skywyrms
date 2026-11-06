@@ -153,30 +153,6 @@ public final class DragonAbilities {
       }
    }
 
-   /** Client side: golden sparks rising from the solar wyrm's corona and back spines, like solar flares. */
-   public static void solarSparks(DragonEntity dragon) {
-      if (dragon.tickCount % 2 != 0) {
-         return;
-      }
-
-      Level level = dragon.level();
-      RandomSource random = dragon.getRandom();
-      float size = dragon.getAgeScale() * dragon.getKind().scale();
-      Vec3 forward = DragonEntity.viewVector(0.0F, dragon.yBodyRot);
-      Vec3 mouth = dragon.mouthPosition();
-      // corona sits on top of the head, a little behind the mouth
-      Vec3 crown = mouth.add(forward.scale(-1.3 * size)).add(0.0, 1.1 * size, 0.0);
-      level.addParticle(ParticleTypes.WAX_ON, crown.x + (random.nextDouble() - 0.5) * 1.2 * size, crown.y + random.nextDouble() * 0.6 * size,
-         crown.z + (random.nextDouble() - 0.5) * 1.2 * size, 0.0, 0.03, 0.0);
-      // along the back spines, from shoulders to tail
-      double along = (random.nextDouble() - 0.35) * 3.2 * size;
-      Vec3 back = dragon.position().add(forward.scale(-along)).add(0.0, dragon.getBbHeight() * 0.95, 0.0);
-      level.addParticle(ParticleTypes.WAX_ON, back.x, back.y + random.nextDouble() * 0.5 * size, back.z, 0.0, 0.04, 0.0);
-      if (random.nextInt(6) == 0) {
-         level.addParticle(ParticleTypes.SMALL_FLAME, crown.x, crown.y + 0.3 * size, crown.z, 0.0, 0.02, 0.0);
-      }
-   }
-
    public static void breathParticles(DragonEntity dragon) {
       Level level = dragon.level();
       RandomSource random = dragon.getRandom();

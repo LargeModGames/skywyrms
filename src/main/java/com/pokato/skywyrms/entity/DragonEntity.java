@@ -524,7 +524,7 @@ public class DragonEntity extends TamableAnimal {
          }
 
          if (this.kind == DragonKind.SOLAR && this.isAlive() && !this.localRiderFirstPerson()) {
-            DragonAbilities.solarSparks(this);
+            this.solarSparks();
          }
 
          if (this.anim.stoop > 0.35F) {
@@ -1528,6 +1528,28 @@ public class DragonEntity extends TamableAnimal {
             double z = this.getZ() + rightZ * half * side + (this.random.nextDouble() - 0.5) * 0.6;
             this.level().addParticle(ParticleTypes.CLOUD, x, y + (this.random.nextDouble() - 0.5) * 0.6, z, 0.0, 0.02, 0.0);
          }
+      }
+   }
+
+   /** Golden sparks rising from the solar wyrm's corona and back spines, like solar flares. */
+   private void solarSparks() {
+      if (this.tickCount % 2 != 0) {
+         return;
+      }
+
+      Level level = this.level();
+      float size = this.getAgeScale() * this.kind.scale();
+      Vec3 forward = viewVector(0.0F, this.yBodyRot);
+      // corona sits on top of the head, a little behind the mouth
+      Vec3 crown = this.mouthPosition().add(forward.scale(-1.3 * size)).add(0.0, 1.1 * size, 0.0);
+      level.addParticle(ParticleTypes.WAX_ON, crown.x + (this.random.nextDouble() - 0.5) * 1.2 * size, crown.y + this.random.nextDouble() * 0.6 * size,
+         crown.z + (this.random.nextDouble() - 0.5) * 1.2 * size, 0.0, 0.03, 0.0);
+      // along the back spines, from shoulders to tail
+      double along = (this.random.nextDouble() - 0.35) * 3.2 * size;
+      Vec3 back = this.position().add(forward.scale(-along)).add(0.0, this.getBbHeight() * 0.95, 0.0);
+      level.addParticle(ParticleTypes.WAX_ON, back.x, back.y + this.random.nextDouble() * 0.5 * size, back.z, 0.0, 0.04, 0.0);
+      if (this.random.nextInt(6) == 0) {
+         level.addParticle(ParticleTypes.SMALL_FLAME, crown.x, crown.y + 0.3 * size, crown.z, 0.0, 0.02, 0.0);
       }
    }
 
