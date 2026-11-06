@@ -3,6 +3,9 @@ package com.pokato.skywyrms.anim;
 public final class DragonAnimator {
    private static final String[] NECK = new String[]{"neck1", "neck2", "neck3", "neck4"};
    private static final String[] TAIL = new String[]{"tail1", "tail2", "tail3", "tail4", "tail5", "tail6"};
+   private static final String[] SHINS = new String[]{"leg_fl_shin", "leg_fr_shin", "leg_bl_shin", "leg_br_shin"};
+   private static final String[] CROWN_RAYS = numbered("deco_crown_ray_", 11);
+   private static final String[] DORSAL_SPINES = numbered("deco_dorsal_", 25);
    private static final float PI = (float) Math.PI;
    private static final float D2R = (float) (Math.PI / 180.0);
    public static final float CROUCH_DIP = 4.0F;
@@ -249,6 +252,7 @@ public final class DragonAnimator {
 
       float f = a.flapPhase;
       float flapW = 1.0F - c01(a.glide);
+      boolean sway = F.hoverSway > 0.0F && hover > 0.001F;
       if (fly > 0.001F) {
          float[] neckFly = new float[]{-0.38397244F, -0.13962634F, (float) (Math.PI / 15), (float) (Math.PI / 15)};
 
@@ -276,7 +280,7 @@ public final class DragonAnimator {
          // hovering: the body rises a moment after each downstroke instead of hanging still
          bodyY += fly * flapW * hover * F.hoverBob * sin(f - 1.2F);
 
-         if (F.hoverSway > 0.0F && hover > 0.001F) {
+         if (sway) {
             for (int i = 0; i < 6; i++) {
                tail[i].rx = tail[i].rx + hover * F.hoverSway * (0.03F + 0.015F * i) * sin(f - 0.6F * i - 2.0F);
             }
@@ -290,9 +294,9 @@ public final class DragonAnimator {
 
       if (fly > 0.001F || flare > 0.001F || leap > 0.001F) {
          flightLegs(s, fly, hover, flare, leap);
-         if (F.hoverSway > 0.0F && hover > 0.001F) {
+         if (sway) {
             // dangling legs swing a little behind the wing beat
-            for (String leg : new String[]{"leg_fl_shin", "leg_fr_shin", "leg_bl_shin", "leg_br_shin"}) {
+            for (String leg : SHINS) {
                if (s.has(leg)) {
                   Bone shin = s.get(leg);
                   shin.rx = shin.rx + hover * F.hoverSway * 0.08F * sin(f - 2.2F);
@@ -965,53 +969,47 @@ public final class DragonAnimator {
 
    /** Solar wyrm: corona rays and back spines flicker in length like solar flames. */
    private static void flicker(Skeleton s, float t) {
-      for (int i = 0; i < 11; i++) {
-         String name = "deco_crown_ray_" + i;
-         if (s.has(name)) {
-            Bone ray = s.get(name);
+      for (int i = 0; i < CROWN_RAYS.length; i++) {
+         if (s.has(CROWN_RAYS[i])) {
+            Bone ray = s.get(CROWN_RAYS[i]);
             ray.sy = ray.sy * (1.0F + 0.16F * sin(t * 0.45F + i * 1.9F) + 0.07F * sin(t * 1.35F + i * 0.7F));
          }
       }
 
-      for (int i = 0; i < 25; i++) {
-         String name = "deco_dorsal_" + i;
-         if (s.has(name)) {
-            Bone spine = s.get(name);
+      for (int i = 0; i < DORSAL_SPINES.length; i++) {
+         if (s.has(DORSAL_SPINES[i])) {
+            Bone spine = s.get(DORSAL_SPINES[i]);
             spine.sy = spine.sy * (1.0F + 0.12F * sin(t * 0.5F - i * 0.55F) + 0.05F * sin(t * 1.6F + i * 1.3F));
          }
       }
    }
 
-   /** Per-kind size of wings, neck and tail, applied as bone scale so textures and the mouth position follow. */
-   private static void proportions(Skeleton s, DragonAnimator.Flavor F) {
-      if (F.wingScale != 1.0F) {
-         for (String n : new String[]{"wing_l", "wing_r"}) {
-            Bone wing = s.get(n);
-            wing.sx = wing.sx * F.wingScale;
-            wing.sy = wing.sy * F.wingScale;
-            wing.sz = wing.sz * F.wingScale;
-         }
+   private static String[] numbered(String prefix, int count) {
+      String[] names = new String[count];
+      for (int i = 0; i < count; i++) {
+         names[i] = prefix + i;
       }
 
+      return names;
+   }
+
+   /** Per-kind size of neck and tail, applied as bone scale so textures and the mouth position follow. */
+   private static void proportions(Skeleton s, DragonAnimator.Flavor F) {
       if (F.neckScale != 1.0F) {
-         Bone neck = s.get("neck1");
-         neck.sx = neck.sx * F.neckScale;
-         neck.sy = neck.sy * F.neckScale;
-         neck.sz = neck.sz * F.neckScale;
+         scale(s.get("neck1"), F.neckScale);
          // the head is a child of the neck: undo the scale so only the neck grows
-         Bone head = s.get("head");
-         float back = 1.0F / F.neckScale;
-         head.sx = head.sx * back;
-         head.sy = head.sy * back;
-         head.sz = head.sz * back;
+         scale(s.get("head"), 1.0F / F.neckScale);
       }
 
       if (F.tailScale != 1.0F) {
-         Bone tail = s.get("tail1");
-         tail.sx = tail.sx * F.tailScale;
-         tail.sy = tail.sy * F.tailScale;
-         tail.sz = tail.sz * F.tailScale;
+         scale(s.get("tail1"), F.tailScale);
       }
+   }
+
+   private static void scale(Bone bone, float k) {
+      bone.sx *= k;
+      bone.sy *= k;
+      bone.sz *= k;
    }
 
    private static final class Flavor {
@@ -1036,7 +1034,6 @@ public final class DragonAnimator {
       float hoverSway = 0.0F;
       /** Above 0: fore and hand follow the arm as a travelling wave (smooth curve) instead of the default lag. */
       float wingWave = 0.0F;
-      float wingScale = 1.0F;
       float neckScale = 1.0F;
       float tailScale = 1.0F;
       boolean flicker = false;
