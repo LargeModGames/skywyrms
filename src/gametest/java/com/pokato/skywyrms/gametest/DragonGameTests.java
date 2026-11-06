@@ -18,6 +18,7 @@ import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 public class DragonGameTests {
@@ -133,6 +134,23 @@ public class DragonGameTests {
 		dragon.setTarget(pig);
 		DragonAbilities.breathTick(dragon, helper.getLevel(), 3);
 		helper.assertTrue(pig.getHealth() < pig.getMaxHealth(), "pig at the mouth was not hit");
+		helper.succeed();
+	}
+
+	@GameTest
+	public void sunBeamStopsAtWalls(GameTestHelper helper) {
+		DragonEntity dragon = spawn(helper, DragonKind.SOLAR);
+		dragon.setYRot(0.0F);
+		dragon.setYBodyRot(0.0F);
+		dragon.setYHeadRot(0.0F);
+		Vec3 mouth = dragon.mouthPosition();
+		BlockPos wall = BlockPos.containing(mouth.add(0, 0, 3));
+		helper.getLevel().setBlockAndUpdate(wall, Blocks.STONE.defaultBlockState());
+		LivingEntity pig = helper.spawn(EntityTypes.PIG, helper.relativeVec(mouth.add(0, -0.45, 4.5)));
+		dragon.setTarget(pig);
+		DragonAbilities.breathTick(dragon, helper.getLevel(), 3);
+		helper.getLevel().removeBlock(wall, false);
+		helper.assertTrue(pig.getHealth() == pig.getMaxHealth(), "pig behind the wall was hit");
 		helper.succeed();
 	}
 
