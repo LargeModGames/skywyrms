@@ -66,8 +66,6 @@ public final class DragonAnimator {
             break;
          case "solar":
             f.flapAmp = 0.64F;
-            // stiffer wing: fore and hand follow the arm closely so the membranes stay joined at the elbow
-            f.tipLag = 0.75F;
             f.neckSway = 1.1F;
             f.walkBob = 0.9F;
             f.hoverTilt = 0.14F;
@@ -989,15 +987,10 @@ public final class DragonAnimator {
 
    /** Per-kind size of neck and tail, applied as bone scale so textures and the mouth position follow. */
    private static void proportions(Skeleton s, DragonAnimator.Flavor F) {
-      if (F.neckScale != 1.0F) {
-         scale(s.get("neck1"), F.neckScale);
-         // the head is a child of the neck: undo the scale so only the neck grows
-         scale(s.get("head"), 1.0F / F.neckScale);
-      }
-
-      if (F.tailScale != 1.0F) {
-         scale(s.get("tail1"), F.tailScale);
-      }
+      scale(s.get("neck1"), F.neckScale);
+      // the head is a child of the neck: undo the scale so only the neck grows
+      scale(s.get("head"), 1.0F / F.neckScale);
+      scale(s.get("tail1"), F.tailScale);
    }
 
    private static void scale(Bone bone, float k) {
