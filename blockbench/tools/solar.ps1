@@ -23,12 +23,13 @@ foreach ($p in $gd.parts) {
         $p.cubes = @(Cube @(-0.5, (-$h), -0.5) @(1, $h, 1) $RAY)
     }
 
-    # corona: a gold disc behind the head with eleven rays, alternating long and short
+    # corona: a gold disc on the head with eleven rays, alternating long and short
     if ($p.name -eq 'head') {
-        $out.Add((Part 'deco_crown' 'head' @(0.0, -5.5, 3.0) @(-20.0, 0.0, 0.0) (Cube @(-2.0, -2.0, -0.5) @(4, 4, 1))))
+        # turned a quarter so the rider sees it edge-on (a crest of rays seen from the side)
+        $out.Add((Part 'deco_crown' 'head' @(0.0, -5.5, 2.0) @(-10.0, 90.0, 0.0) (Cube @(-2.0, -2.0, -0.5) @(4, 4, 1))))
         $i = 0
         for ($a = -100; $a -le 100; $a += 20) {
-            $len = $(if ($i % 2 -eq 0) { 10 } else { 6 })
+            $len = $(if ($i % 2 -eq 0) { 8 } else { 5 })
             $out.Add((Part "deco_crown_ray_$i" 'deco_crown' @(0.0, 0.0, 0.0) @(0.0, 0.0, [double]$a) (Cube @(-0.5, (-2.5 - $len), -0.5) @(1, $len, 1) $RAY)))
             $i++
         }
