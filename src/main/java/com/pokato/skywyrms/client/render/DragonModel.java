@@ -41,7 +41,12 @@ public class DragonModel extends EntityModel<DragonRenderState> {
          this.parts[i] = modelPart;
          this.bones[i] = bone;
       }
+
+      this.neck = byName.get("neck1");
    }
+
+   /** Root of the neck chain (neck, head, jaw and their decorations), hidden in the rider's first-person view. */
+   private ModelPart neck;
 
    public static LayerDefinition createLayer(DragonKind kind) {
       GeoData geo = kind.geo();
@@ -105,6 +110,10 @@ public class DragonModel extends EntityModel<DragonRenderState> {
          part.yScale = bone.sy;
          part.zScale = bone.sz;
          part.visible = bone.visible;
+      }
+
+      if (state.riderView && this.neck != null) {
+         this.neck.visible = false;
       }
    }
 }

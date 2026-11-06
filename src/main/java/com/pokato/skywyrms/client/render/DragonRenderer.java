@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.pokato.skywyrms.Skywyrms;
 import com.pokato.skywyrms.entity.DragonEntity;
 import com.pokato.skywyrms.entity.DragonKind;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.resources.Identifier;
@@ -39,6 +40,8 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
       super.extractRenderState(entity, state, partialTick);
       state.kind = this.kind;
       state.blood = entity.blood();
+      Minecraft minecraft = Minecraft.getInstance();
+      state.riderView = minecraft.player != null && entity.hasPassenger(minecraft.player) && minecraft.options.getCameraType().isFirstPerson();
       entity.anim.fill(state.anim, entity, partialTick);
    }
 

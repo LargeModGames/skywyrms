@@ -45,6 +45,7 @@ public final class ClientHooks {
             ridingTicks = 0;
          } else {
             ridingTicks++;
+            AimMarker.tick(player, dragon, ridingTicks);
             if (ridingTicks <= 120) {
                if (ridingTicks % 10 == 1) {
                   overlay(player, controlsHint(minecraft, dragon));
