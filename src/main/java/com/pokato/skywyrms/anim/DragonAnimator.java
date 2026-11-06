@@ -63,9 +63,18 @@ public final class DragonAnimator {
             break;
          case "solar":
             f.flapAmp = 0.64F;
-            f.tipLag = 1.25F;
+            // stiffer wing: fore and hand follow the arm closely so the membranes stay joined at the elbow
+            f.tipLag = 0.75F;
             f.neckSway = 1.1F;
             f.walkBob = 0.9F;
+            f.hoverTilt = 0.14F;
+            f.hoverBob = 1.8F;
+            f.hoverAmp = 0.32F;
+            f.hoverSway = 1.0F;
+            f.wingWave = 1.0F;
+            f.neckScale = 1.35F;
+            f.tailScale = 1.4F;
+            f.flicker = true;
       }
 
       return f;
@@ -186,7 +195,7 @@ public final class DragonAnimator {
          tail[i] = s.get(TAIL[i]);
       }
 
-      root.rx = root.rx + (-a.pitch - hover * 0.3F);
+      root.rx = root.rx + (-a.pitch - hover * F.hoverTilt);
       root.rz = root.rz + -a.roll;
       root.rx += 0.07F * crouch;
       float br = sin(t * 0.085F * F.idleRate);
@@ -264,11 +273,32 @@ public final class DragonAnimator {
          }
 
          bodyY += fly * flapW * 0.85F * sin(f) * (1.0F + 0.3F * hover);
+         // hovering: the body rises a moment after each downstroke instead of hanging still
+         bodyY += fly * flapW * hover * F.hoverBob * sin(f - 1.2F);
+
+         if (F.hoverSway > 0.0F && hover > 0.001F) {
+            for (int i = 0; i < 6; i++) {
+               tail[i].rx = tail[i].rx + hover * F.hoverSway * (0.03F + 0.015F * i) * sin(f - 0.6F * i - 2.0F);
+            }
+
+            for (int i = 0; i < 4; i++) {
+               neck[i].rx = neck[i].rx + hover * F.hoverSway * 0.02F * sin(f - 0.4F * i - 1.6F);
+            }
+         }
          body.rx = body.rx + fly * flapW * 0.025F * cos(f);
       }
 
       if (fly > 0.001F || flare > 0.001F || leap > 0.001F) {
          flightLegs(s, fly, hover, flare, leap);
+         if (F.hoverSway > 0.0F && hover > 0.001F) {
+            // dangling legs swing a little behind the wing beat
+            for (String leg : new String[]{"leg_fl_shin", "leg_fr_shin", "leg_bl_shin", "leg_br_shin"}) {
+               Bone shin = s.get(leg);
+               if (shin != null) {
+                  shin.rx = shin.rx + hover * F.hoverSway * 0.08F * sin(f - 2.2F);
+               }
+            }
+         }
       }
 
       float turn = clamp(a.yawVel, -1.0F, 1.0F) * (0.35F + 0.65F * fly) + clamp(a.roll, -1.0F, 1.0F) * 0.35F * fly;
@@ -440,6 +470,10 @@ public final class DragonAnimator {
       float unfold = Math.max(fly, Math.max(0.3F * roar * F.roarLift, 0.14F * hurt) * (1.0F - 0.5F * sit));
       unfold = Math.max(unfold, Math.max(0.8F * lift, wingIdle[0]));
       wings(s, a, F, unfold, fly, glide, hover, dive, stoop, climb, br, sit, lockW, lockS, flare);
+      proportions(s, F);
+      if (F.flicker) {
+         flicker(s, t);
+      }
       float lim = 1.4F;
       body.x = body.x + clamp(bodyX, -lim, lim);
       body.y = body.y + ((sit > 0.001F ? bodyY : clamp(bodyY, -lim, lim)) + dip);
@@ -821,7 +855,7 @@ public final class DragonAnimator {
       float sf = lerp(sin(f), lockS, lockW);
       float cf = lerp(cos(f), lockC, lockW);
       float flapW = 1.0F - c01(a.glide);
-      float amp = F.flapAmp * flapW * (1.0F + 0.28F * hover + 0.2F * climb) * (1.0F - 0.65F * dive) * (1.0F - 0.8F * stoop);
+      float amp = F.flapAmp * flapW * (1.0F + F.hoverAmp * hover + 0.2F * climb) * (1.0F - 0.65F * dive) * (1.0F - 0.8F * stoop);
       float k = amp / Math.max(F.flapAmp, 0.01F);
       float upfold = (float)Math.pow(Math.max(0.0F, cf), 1.5) * k;
       float gl = c01(a.glide);
@@ -835,6 +869,19 @@ public final class DragonAnimator {
       float hRz = -(F.tipLag * amp * 0.52F * -(cf * 0.7648F + sf * 0.6442F) - 0.08F * gl + flutter);
       float hRy = -(0.2F + 0.2F * upfold + 0.45F * dive - 0.15F * stoop);
       float hRx = 0.1F * -(cf * 0.8776F + sf * 0.4794F) * k;
+      if (F.wingWave > 0.0F) {
+         // the beat travels out through the wing: fore and hand bend the same way as the arm, a little later,
+         // so the wing stays one smooth curve instead of zig-zagging at the elbow and wrist
+         float sfLagF = sf * 0.8525F - cf * 0.5227F;
+         float sfLagH = sf * 0.4536F - cf * 0.8912F;
+         fRz = -(F.wingWave * amp * 0.34F * sfLagF - 0.1F * gl - 0.04F * dive);
+         hRz = -(F.wingWave * amp * 0.26F * sfLagH - 0.08F * gl + flutter);
+         // bending up and down happens around the joint line, so the membranes stay joined; sweeping back and
+         // twisting open wedge-shaped gaps at elbow and wrist, so keep those small in flight
+         fRy = 0.1F + 0.1F * upfold - 0.5F * dive - 0.2F * stoop - 0.12F * flare;
+         hRy = -(0.04F + 0.05F * upfold + 0.45F * dive - 0.15F * stoop);
+         hRx = 0.0F;
+      }
       float szFly = 1.0F - 0.14F * upfold - 0.22F * dive - 0.25F * stoop;
       float[] eA;
       float[] eF;
@@ -916,6 +963,57 @@ public final class DragonAnimator {
       }
    }
 
+   /** Solar wyrm: corona rays and back spines flicker in length like solar flames. */
+   private static void flicker(Skeleton s, float t) {
+      for (int i = 0; i < 11; i++) {
+         String name = "deco_crown_ray_" + i;
+         if (s.has(name)) {
+            Bone ray = s.get(name);
+            ray.sy = ray.sy * (1.0F + 0.16F * sin(t * 0.45F + i * 1.9F) + 0.07F * sin(t * 1.35F + i * 0.7F));
+         }
+      }
+
+      for (int i = 0; i < 25; i++) {
+         String name = "deco_dorsal_" + i;
+         if (s.has(name)) {
+            Bone spine = s.get(name);
+            spine.sy = spine.sy * (1.0F + 0.12F * sin(t * 0.5F - i * 0.55F) + 0.05F * sin(t * 1.6F + i * 1.3F));
+         }
+      }
+   }
+
+   /** Per-kind size of wings, neck and tail, applied as bone scale so textures and the mouth position follow. */
+   private static void proportions(Skeleton s, DragonAnimator.Flavor F) {
+      if (F.wingScale != 1.0F) {
+         for (String n : new String[]{"wing_l", "wing_r"}) {
+            Bone wing = s.get(n);
+            wing.sx = wing.sx * F.wingScale;
+            wing.sy = wing.sy * F.wingScale;
+            wing.sz = wing.sz * F.wingScale;
+         }
+      }
+
+      if (F.neckScale != 1.0F) {
+         Bone neck = s.get("neck1");
+         neck.sx = neck.sx * F.neckScale;
+         neck.sy = neck.sy * F.neckScale;
+         neck.sz = neck.sz * F.neckScale;
+         // the head is a child of the neck: undo the scale so only the neck grows
+         Bone head = s.get("head");
+         float back = 1.0F / F.neckScale;
+         head.sx = head.sx * back;
+         head.sy = head.sy * back;
+         head.sz = head.sz * back;
+      }
+
+      if (F.tailScale != 1.0F) {
+         Bone tail = s.get("tail1");
+         tail.sx = tail.sx * F.tailScale;
+         tail.sy = tail.sy * F.tailScale;
+         tail.sz = tail.sz * F.tailScale;
+      }
+   }
+
    private static final class Flavor {
       float flapAmp = 0.6F;
       float tipLag = 1.0F;
@@ -928,5 +1026,19 @@ public final class DragonAnimator {
       float foldSz = 0.35F;
       float tailFlick = 0.0F;
       float roarLift = 1.0F;
+      /** How far the body leans back while hovering (radians). */
+      float hoverTilt = 0.3F;
+      /** Extra body rise and fall per wing beat while hovering. */
+      float hoverBob = 0.0F;
+      /** Extra wing beat amplitude while hovering. */
+      float hoverAmp = 0.28F;
+      /** Tail, neck and leg follow-through while hovering (0 = off). */
+      float hoverSway = 0.0F;
+      /** Above 0: fore and hand follow the arm as a travelling wave (smooth curve) instead of the default lag. */
+      float wingWave = 0.0F;
+      float wingScale = 1.0F;
+      float neckScale = 1.0F;
+      float tailScale = 1.0F;
+      boolean flicker = false;
    }
 }
