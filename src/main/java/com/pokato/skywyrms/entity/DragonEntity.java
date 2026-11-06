@@ -99,6 +99,7 @@ public class DragonEntity extends TamableAnimal {
    public static volatile boolean descendKeyDown;
    public static volatile boolean sprintKeyDown;
    public static volatile boolean ascendKeyDown;
+   public static volatile boolean firstPersonView;
    public static final float SPRINT_BOOST = 1.3F;
    public static final float DIVE_MAX = 2.4F;
    private static final float DIVE_GAIN = 0.016F;
@@ -509,7 +510,7 @@ public class DragonEntity extends TamableAnimal {
             DragonAbilities.breathParticles(this);
          }
 
-         if (this.kind == DragonKind.SOLAR && this.isAlive()) {
+         if (this.kind == DragonKind.SOLAR && this.isAlive() && !(firstPersonView && this.hasPassenger(e -> e instanceof Player p && p.isLocalPlayer()))) {
             DragonAbilities.solarSparks(this);
          }
 

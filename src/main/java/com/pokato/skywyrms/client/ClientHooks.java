@@ -29,6 +29,7 @@ public final class ClientHooks {
          DragonEntity.descendKeyDown = dragon != null && ModKeys.DESCEND.isDown();
          DragonEntity.sprintKeyDown = dragon != null && minecraft.options.keySprint.isDown();
          DragonEntity.ascendKeyDown = dragon != null && minecraft.options.keyJump.isDown();
+         DragonEntity.firstPersonView = minecraft.options.getCameraType().isFirstPerson();
          DiveWindSound.update(minecraft, player, dragon);
          boolean down = dragon != null && ModKeys.ABILITY.isDown();
          if (down != abilityDown) {
