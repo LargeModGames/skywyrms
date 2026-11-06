@@ -63,7 +63,7 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
          Vec3 origin = entity.position();
          state.beamStart = start.subtract(origin);
          state.beamEnd = end.subtract(origin);
-         state.beamTime = entity.tickCount + partialTick;
+         state.beamTime = entity.breathAge() + partialTick;
       }
    }
 

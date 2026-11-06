@@ -115,6 +115,7 @@ public class DragonEntity extends TamableAnimal {
    private boolean abilityHeld;
    private int abilityCooldown;
    private int breathTicks;
+   private int breathStartTick;
    private int aiBreathTicks;
    private int aiAbilityCooldown = 60;
    private boolean aiFlying;
@@ -273,6 +274,8 @@ public class DragonEntity extends TamableAnimal {
       super.onSyncedDataUpdated(accessor);
       if (DATA_GROWTH.equals(accessor)) {
          this.refreshDimensions();
+      } else if (DATA_BREATHING.equals(accessor) && this.isBreathing()) {
+         this.breathStartTick = this.tickCount;
       }
    }
 
@@ -377,6 +380,11 @@ public class DragonEntity extends TamableAnimal {
 
    public boolean isBreathing() {
       return this.entityData.get(DATA_BREATHING);
+   }
+
+   /** Ticks since this side saw the breath start, so client effects can follow the server's damage ticks. */
+   public int breathAge() {
+      return this.tickCount - this.breathStartTick;
    }
 
    public int getEnergy() {

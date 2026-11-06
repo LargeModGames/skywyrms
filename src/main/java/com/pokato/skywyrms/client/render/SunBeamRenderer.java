@@ -36,7 +36,7 @@ public final class SunBeamRenderer {
       Vec3 w = u.cross(dir).normalize();
       float t = state.beamTime;
       float pulse = 0.5F + 0.5F * (float)Math.sin(t * 0.55F);
-      float phase = (t % 10.0F) / 10.0F;
+      float phase = ((t + 7.0F) % 10.0F) / 10.0F;
       float flare = phase < 0.3F ? 1.0F - phase / 0.3F : 0.0F;
       float scroll = -t * 0.35F;
       float vLen = (float)length * 0.3F;

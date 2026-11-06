@@ -587,7 +587,7 @@ public final class DragonAbilities {
       Vec3 v = u.cross(dir).normalize();
       float t = dragon.tickCount;
       double pulse = 0.5 + 0.5 * Math.sin(t * 0.55);
-      boolean flare = dragon.tickCount % 10 == 0;
+      boolean flare = dragon.breathAge() % 10 == 3;
 
       // two spiral strands twisting along the beam (every other tick keeps the particle count sane)
       if (dragon.tickCount % 2 == 0) {
