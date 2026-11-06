@@ -111,14 +111,42 @@ can still be harmless. Explain them in the pull request.
 
 ## Testing
 
-There are no automated tests. Before you open a pull request:
+### Automated tests
 
-1. `.\gradlew build` passes.
-2. For anything a player can see or do, test it in game. Loom can start a dev client and server:
+| Command | What it runs | Where it lives |
+| --- | --- | --- |
+| `.\gradlew build` | Compile, JUnit tests and server gametests | `src/test`, `src/gametest` |
+| `.\gradlew test` | JUnit only: every JSON parses, every `dragon_geo` model loads, keeps the bones the animator moves and fits its texture, all textures, sounds, particles, items, loot tables and translations exist, genes logic | `src/test/java` |
+| `.\gradlew runGameTest` | Server gametests: every dragon and hybrid spawns and ticks, eggs hatch, breath and cast abilities work, mouth position, riding | `src/gametest/.../DragonGameTests.java` |
+| `.\gradlew runProductionServerGameTest` | The same gametests on a real Fabric server with the built jar | |
+| `.\gradlew runProductionServerSmoke` | A real dedicated server: generates a world, ticks every dragon for 5 seconds, stops. Look for `SKYWYRMS SMOKE PASSED` in `build/run/productionSmoke/logs/latest.log` | `ServerSmoke.java` |
+| `.\gradlew runClientGameTest` | A game window: renders every dragon, a hybrid and an egg, rides a dragon, uses an ability on a dedicated server. Screenshots in `build/run/clientGameTest/screenshots` | `DragonClientGameTest.java` |
+
+CI does not run the client test: GitHub's runners cannot open an OpenGL window for Minecraft. Run
+`runClientGameTest` on your own machine for every change a player can see, and look at the screenshots.
+
+When you add a feature, add a test next to the closest existing one. When you rename or remove a bone that
+`DragonAnimator` uses, update `ANIMATED_BONES` in `GeoDataTest` together with the animator.
+
+### CI
+
+`.github/workflows/ci.yml` runs on every pull request and every push to `main`:
+
+- **Build and tests:** `gradlew build`, then checks that every jar has `LICENSE_skywyrms` and the right
+  `fabric.mod.json`. The jar is uploaded as the `skywyrms-jar` artifact.
+- **Production server tests:** the gametests and the smoke test on a real server. Logs are uploaded.
+- **Bytecode report** (pull requests only, never fails): compares every class with the base branch. The summary
+  is on the run page, the diffs in the `bytecode-report` artifact. Use it to show that a cleanup changes nothing.
+
+The first two must pass before a pull request can merge.
+
+### By hand
+
+1. For anything a player can see or do, test it in game. Loom can start a dev client and server:
    `.\gradlew runClient` and `.\gradlew runServer` (game files go into `run/`, which git ignores).
-3. For model changes, check every dragon you touched: idle, walking, flying, sitting, with a rider, and the
+2. For model changes, check every dragon you touched: idle, walking, flying, sitting, with a rider, and the
    breath ability (it must still come out of the mouth).
-4. For server-side changes, test on a dedicated server (`runServer`), not only in single player.
+3. For server-side changes, test on a dedicated server (`runServer`), not only in single player.
 
 Write in the pull request what you tested and what you could not test.
 

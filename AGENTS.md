@@ -17,7 +17,9 @@ Gradle needs JDK 25. The machine's `JAVA_HOME` points to JDK 17, so set it per s
 $env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-25.0.4.101-hotspot'; .\gradlew build
 ```
 
-Output: `build/libs/skywyrms-<mod_version>-fabric-26.3.jar`. There are no tests; the build is the gate.
+Output: `build/libs/skywyrms-<mod_version>-fabric-26.3.jar`. `build` also runs the JUnit tests (`src/test`) and the
+server gametests (`src/gametest`). CI (`.github/workflows/ci.yml`) adds production server and smoke test
+runs; the client gametest (`runClientGameTest`) runs only locally. CONTRIBUTING.md lists every test command.
 Versions (Loom, loader, Fabric API) come from fabric-example-mod's `26.3` branch and live in `gradle.properties`.
 `fabric.mod.json` takes its version from `mod_version`. Bump `mod_version` with every change we deploy.
 
