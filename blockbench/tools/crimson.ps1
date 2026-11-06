@@ -1,3 +1,4 @@
+#Requires -PSEdition Desktop
 param([string]$SrcGeo, [string]$SrcTex, [string]$OutGeo, [string]$OutTex)
 $ErrorActionPreference = 'Stop'
 $gd = Get-Content $SrcGeo -Raw | ConvertFrom-Json

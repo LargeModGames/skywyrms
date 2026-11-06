@@ -1,4 +1,5 @@
-﻿param([string]$SrcGeo, [string]$SrcTex, [string]$OutGeo, [string]$OutTex, [string]$SrcGlow, [string]$OutGlow)
+﻿#Requires -PSEdition Desktop
+param([string]$SrcGeo, [string]$SrcTex, [string]$OutGeo, [string]$OutTex, [string]$SrcGlow, [string]$OutGlow)
 # Solar wyrm: storm wyrm body (same size) with a sun look. A corona of eleven rays behind the head, tall
 # sun-ray spines with fiery tips, golden horns, a sun disc on the chest, a fan of rays on the tail tip,
 # warm gold scales with white-hot veins, and wings that glow from white at the arm to sunset orange.

@@ -1,5 +1,10 @@
 # Regenerates every .bbmodel and variant texture in blockbench/ from the mod's own geo and textures.
 $ErrorActionPreference = 'Stop'
+if ($PSVersionTable.PSEdition -eq 'Core') {
+    # the texture scripts compile System.Drawing code, which only Windows PowerShell can reference
+    powershell -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath
+    exit $LASTEXITCODE
+}
 $tools = $PSScriptRoot
 $out = Split-Path $tools
 $assets = Join-Path (Split-Path $out) 'src\main\resources\assets\skywyrms'
