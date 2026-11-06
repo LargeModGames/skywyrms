@@ -496,18 +496,10 @@ public final class DragonAbilities {
       Vec3 mouth = dragon.mouthPosition();
       LivingEntity user = dragon.abilityUser();
       Vec3 from = user != dragon ? user.getEyePosition() : mouth;
-      Vec3 aim = dragon.aimPoint(SUN_BEAM_RANGE);
-      Vec3 end = from.add(direction(from, aim, dragon).scale(SUN_BEAM_RANGE));
-      if (user != dragon) {
-         // aimPoint already stopped the rider's look ray at the first solid block
-         if (from.distanceToSqr(aim) < from.distanceToSqr(end)) {
-            end = aim;
-         }
-      } else {
-         BlockHitResult block = clipBlocks(dragon, from, end, Fluid.NONE);
-         if (block.getType() != Type.MISS) {
-            end = block.getLocation();
-         }
+      Vec3 end = from.add(direction(from, dragon.aimPoint(SUN_BEAM_RANGE), dragon).scale(SUN_BEAM_RANGE));
+      BlockHitResult block = clipBlocks(dragon, from, end, Fluid.NONE);
+      if (block.getType() != Type.MISS) {
+         end = block.getLocation();
       }
 
       return new SunBeam(from, end, mouth);
