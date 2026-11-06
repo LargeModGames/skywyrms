@@ -297,10 +297,8 @@ public final class DragonAnimator {
          if (sway) {
             // dangling legs swing a little behind the wing beat
             for (String leg : SHINS) {
-               if (s.has(leg)) {
-                  Bone shin = s.get(leg);
-                  shin.rx = shin.rx + hover * F.hoverSway * 0.08F * sin(f - 2.2F);
-               }
+               Bone shin = s.get(leg);
+               shin.rx = shin.rx + hover * F.hoverSway * 0.08F * sin(f - 2.2F);
             }
          }
       }
@@ -970,17 +968,13 @@ public final class DragonAnimator {
    /** Solar wyrm: corona rays and back spines flicker in length like solar flames. */
    private static void flicker(Skeleton s, float t) {
       for (int i = 0; i < CROWN_RAYS.length; i++) {
-         if (s.has(CROWN_RAYS[i])) {
-            Bone ray = s.get(CROWN_RAYS[i]);
-            ray.sy = ray.sy * (1.0F + 0.16F * sin(t * 0.45F + i * 1.9F) + 0.07F * sin(t * 1.35F + i * 0.7F));
-         }
+         Bone ray = s.get(CROWN_RAYS[i]);
+         ray.sy = ray.sy * (1.0F + 0.16F * sin(t * 0.45F + i * 1.9F) + 0.07F * sin(t * 1.35F + i * 0.7F));
       }
 
       for (int i = 0; i < DORSAL_SPINES.length; i++) {
-         if (s.has(DORSAL_SPINES[i])) {
-            Bone spine = s.get(DORSAL_SPINES[i]);
-            spine.sy = spine.sy * (1.0F + 0.12F * sin(t * 0.5F - i * 0.55F) + 0.05F * sin(t * 1.6F + i * 1.3F));
-         }
+         Bone spine = s.get(DORSAL_SPINES[i]);
+         spine.sy = spine.sy * (1.0F + 0.12F * sin(t * 0.5F - i * 0.55F) + 0.05F * sin(t * 1.6F + i * 1.3F));
       }
    }
 
