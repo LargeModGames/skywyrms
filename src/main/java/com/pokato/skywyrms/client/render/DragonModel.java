@@ -8,6 +8,7 @@ import com.pokato.skywyrms.entity.GeoData;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -43,7 +44,8 @@ public class DragonModel extends EntityModel<DragonRenderState> {
       }
    }
 
-   public static LayerDefinition createLayer(DragonKind kind) {
+   /** Every part of the kind's model, with only the cubes that pass the filter. */
+   public static LayerDefinition createLayer(DragonKind kind, Predicate<GeoData.Cube> keep) {
       GeoData geo = kind.geo();
       MeshDefinition mesh = new MeshDefinition();
       Map<String, PartDefinition> definitions = new HashMap<>();
@@ -52,6 +54,10 @@ public class DragonModel extends EntityModel<DragonRenderState> {
          CubeListBuilder cubes = CubeListBuilder.create();
 
          for (GeoData.Cube cube : part.cubes) {
+            if (!keep.test(cube)) {
+               continue;
+            }
+
             cubes.texOffs(cube.u, cube.v).mirror(cube.mirror);
             if (cube.inflate != 0.0F || cube.w != 0.0F && cube.h != 0.0F && cube.d != 0.0F) {
                cubes.addBox(cube.x, cube.y, cube.z, cube.w, cube.h, cube.d, new CubeDeformation(cube.inflate));

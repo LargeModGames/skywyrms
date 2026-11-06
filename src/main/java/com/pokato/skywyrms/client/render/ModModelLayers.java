@@ -22,7 +22,7 @@ public final class ModModelLayers {
 
    public static void register(BiConsumer<ModelLayerLocation, Supplier<LayerDefinition>> registrar) {
       for (DragonKind kind : DragonKind.values()) {
-         registrar.accept(dragon(kind), () -> DragonModel.createLayer(kind));
+         registrar.accept(dragon(kind), () -> DragonModel.createLayer(kind, cube -> true));
       }
 
       registrar.accept(EGG, EggModel::createLayer);
