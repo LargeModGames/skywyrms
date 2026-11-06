@@ -143,6 +143,9 @@ public final class DragonSpawner {
       List<DragonKind> options = new ArrayList<>(3);
       if (biome.is(BiomeTags.IS_BADLANDS) || biome.is(BiomeTags.IS_SAVANNA) || biome.is(Biomes.DESERT)) {
          options.add(DragonKind.EMBER);
+      }
+
+      if (biome.is(Biomes.DESERT)) {
          options.add(DragonKind.SOLAR);
       }
 
