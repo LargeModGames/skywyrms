@@ -524,11 +524,7 @@ public final class DragonAbilities {
       return new Vec3[]{from, end, mouth};
    }
 
-   /**
-    * Solar wyrm, held: a thick beam of sunlight for as long as the ability key is held. Every half second it
-    * hits every enemy within SUN_BEAM_WIDTH of the line (up to the first solid block); undead take double
-    * damage and catch fire, and targets glow.
-    */
+   /** Every half second, hits each visible enemy within SUN_BEAM_WIDTH of the beam; undead take double and burn. */
    private static void sunBeamTick(DragonEntity dragon, ServerLevel level, int tick) {
       Vec3[] beam = sunBeamLine(dragon);
       Vec3 from = beam[0];
@@ -566,11 +562,7 @@ public final class DragonAbilities {
       }
    }
 
-   /**
-    * Client side extras around the sun beam (the beam itself is drawn as glowing geometry by
-    * SunBeamRenderer): two golden spiral strands, sparks along the beam on every flare, a starburst where it
-    * lands and a spinning ball of light in the mouth. Only self-lit particles, so nothing looks dull.
-    */
+   /** Client side particles around the sun beam, which SunBeamRenderer draws. */
    private static void sunBeamParticles(DragonEntity dragon, Level level, RandomSource random) {
       Vec3[] beam = sunBeamLine(dragon);
       Vec3 mouth = beam[2];

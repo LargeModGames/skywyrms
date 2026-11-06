@@ -8,10 +8,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Draws the solar wyrm's sun beam as glowing geometry: a white core tube inside two pulsing golden glow
- * tubes, using the beacon beam render type so it is full bright. Every half second the beam flares wider.
- */
+/** Draws the sun beam as full-bright tubes that flare wider on every damage tick. */
 public final class SunBeamRenderer {
    private static final Identifier TEXTURE = Identifier.withDefaultNamespace("textures/entity/beacon/beacon_beam.png");
    private static final int SIDES = 10;
