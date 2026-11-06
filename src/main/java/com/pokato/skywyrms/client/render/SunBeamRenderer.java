@@ -5,15 +5,16 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.phys.Vec3;
 
 /** Draws the sun beam as full-bright tubes that flare wider on every damage tick. */
 public final class SunBeamRenderer {
    private static final Identifier TEXTURE = Identifier.withDefaultNamespace("textures/entity/beacon/beacon_beam.png");
    private static final int SIDES = 10;
-   private static final int FULL_BRIGHT = 15728880;
-   private static final int NO_OVERLAY = 655360;
 
    private SunBeamRenderer() {
    }
@@ -41,13 +42,9 @@ public final class SunBeamRenderer {
       tube(poseStack, collector, RenderTypes.beaconBeam(TEXTURE, false), start, end, u, w,
          0.32F + 0.08F * pulse + 0.15F * flare, 0xFFFFF8E0, scroll, vLen, false);
       tube(poseStack, collector, RenderTypes.beaconBeam(TEXTURE, true), start, end, u, w,
-         0.85F + 0.3F * pulse + 0.6F * flare, argb(110 + (int)(90 * flare), 0xFFD24A), scroll * 0.7F, vLen, true);
+         0.85F + 0.3F * pulse + 0.6F * flare, ARGB.color(110 + (int)(90 * flare), 0xFFD24A), scroll * 0.7F, vLen, true);
       tube(poseStack, collector, RenderTypes.beaconBeam(TEXTURE, true), start, end, u, w,
-         1.7F + 0.5F * pulse + 1.2F * flare, argb(45 + (int)(70 * flare), 0xFFA21E), scroll * 0.4F, vLen * 0.5F, true);
-   }
-
-   private static int argb(int alpha, int rgb) {
-      return Math.max(0, Math.min(255, alpha)) << 24 | rgb & 0xFFFFFF;
+         1.7F + 0.5F * pulse + 1.2F * flare, ARGB.color(45 + (int)(70 * flare), 0xFFA21E), scroll * 0.4F, vLen * 0.5F, true);
    }
 
    private static void tube(
@@ -84,8 +81,8 @@ public final class SunBeamRenderer {
       consumer.addVertex(pose, (float)p.x, (float)p.y, (float)p.z)
          .setColor(color)
          .setUv(u, v)
-         .setOverlay(NO_OVERLAY)
-         .setLight(FULL_BRIGHT)
+         .setOverlay(OverlayTexture.NO_OVERLAY)
+         .setLight(LightCoordsUtil.FULL_BRIGHT)
          .setNormal(pose, 0.0F, 1.0F, 0.0F);
    }
 }
