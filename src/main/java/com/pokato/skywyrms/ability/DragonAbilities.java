@@ -45,6 +45,10 @@ import net.minecraft.world.phys.HitResult.Type;
 
 public final class DragonAbilities {
    public static final double BREATH_RANGE = 20.0;
+   /** Sun beam reach in blocks; also used by the rider's aim marker. */
+   public static final double SUN_BEAM_RANGE = 32.0;
+   /** How far (in blocks) from the beam line a target can be and still be hit. */
+   public static final double SUN_BEAM_WIDTH = 1.5;
    private static final double CONE_SLOPE = 0.26;
    private static final double FX = 1.33;
 
@@ -479,7 +483,7 @@ public final class DragonAbilities {
     * solid block), blinds them briefly and makes them glow; undead take double damage and catch fire.
     */
    private static boolean sunBeam(DragonEntity dragon, ServerLevel level, Vec3 mouth) {
-      double range = 32.0;
+      double range = SUN_BEAM_RANGE;
       LivingEntity user = dragon.abilityUser();
       Vec3 from = user != dragon ? user.getEyePosition() : mouth;
       Vec3 dir = direction(from, dragon.aimPoint(range), dragon);
@@ -498,10 +502,10 @@ public final class DragonAbilities {
       sound(level, mouth, ModSounds.get("ability.sun_beam"), 2.5F, 0.95F + level.getRandom().nextFloat() * 0.1F);
       accentBurst(dragon, level, beamEnd, 18);
       float power = dragon.abilityPower();
-      AABB search = new AABB(from, beamEnd).inflate(1.5);
+      AABB search = new AABB(from, beamEnd).inflate(SUN_BEAM_WIDTH + 1.0);
 
       for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, search, dragon::canAbilityHit)) {
-         if (target != user && target.getBoundingBox().inflate(0.6).clip(from, beamEnd).isPresent()) {
+         if (target != user && target.getBoundingBox().inflate(SUN_BEAM_WIDTH).clip(from, beamEnd).isPresent()) {
             boolean undead = target.typeHolder().is(EntityTypeTags.UNDEAD);
             target.hurtServer(level, dragon.abilityDamage(DamageTypes.INDIRECT_MAGIC), (undead ? 20.0F : 10.0F) * power);
             if (undead) {
