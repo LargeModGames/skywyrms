@@ -50,14 +50,13 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
       state.beam = this.kind.ability() == DragonKind.Ability.SUN_BEAM && entity.isBreathing() && entity.isAlive();
       if (state.beam) {
          // relative to the entity's current position, so the beam follows the smoothly interpolated model
-         Vec3[] line = DragonAbilities.sunBeamLine(entity);
-         Vec3 mouth = line[2];
-         Vec3 end = line[1];
-         Vec3 start = mouth;
+         DragonAbilities.SunBeam line = DragonAbilities.sunBeamLine(entity);
+         Vec3 end = line.end();
+         Vec3 start = line.mouth();
          if (state.riderView) {
-            Vec3 delta = end.subtract(mouth);
+            Vec3 delta = end.subtract(start);
             double length = delta.length();
-            start = length > 3.0 ? mouth.add(delta.scale(2.5 / length)) : end;
+            start = length > 3.0 ? start.add(delta.scale(2.5 / length)) : end;
          }
 
          Vec3 origin = entity.position();
@@ -88,7 +87,7 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
       AABB box = entity.renderBounds();
       if (this.kind.ability() == DragonKind.Ability.SUN_BEAM && entity.isBreathing()) {
          // keep drawing the dragon (and its beam) while only the beam is on screen
-         Vec3 end = DragonAbilities.sunBeamLine(entity)[1];
+         Vec3 end = DragonAbilities.sunBeamLine(entity).end();
          box = box.minmax(new AABB(end, end).inflate(2.0));
       }
 

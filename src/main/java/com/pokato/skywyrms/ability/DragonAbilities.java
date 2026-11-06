@@ -45,7 +45,6 @@ import net.minecraft.world.phys.HitResult.Type;
 
 public final class DragonAbilities {
    public static final double BREATH_RANGE = 20.0;
-   /** Sun beam reach in blocks. */
    public static final double SUN_BEAM_RANGE = 96.0;
    /** How far (in blocks) from the beam line a target can be and still be hit. */
    public static final double SUN_BEAM_WIDTH = 2.0;
@@ -509,38 +508,47 @@ public final class DragonAbilities {
       };
    }
 
-   /** Start and end of the sun beam: from the rider's eyes (or the mouth without a rider) to the first solid block. */
-   public static Vec3[] sunBeamLine(DragonEntity dragon) {
+   /** The sun beam aims from `from` (the rider's eyes, or the mouth without a rider) to `end`, and is drawn from `mouth`. */
+   public record SunBeam(Vec3 from, Vec3 end, Vec3 mouth) {
+   }
+
+   public static SunBeam sunBeamLine(DragonEntity dragon) {
       Vec3 mouth = dragon.mouthPosition();
       LivingEntity user = dragon.abilityUser();
       Vec3 from = user != dragon ? user.getEyePosition() : mouth;
-      Vec3 dir = direction(from, dragon.aimPoint(SUN_BEAM_RANGE), dragon);
-      Vec3 end = from.add(dir.scale(SUN_BEAM_RANGE));
-      BlockHitResult block = clipBlocks(dragon, from, end, Fluid.NONE);
-      if (block.getType() != Type.MISS) {
-         end = block.getLocation();
+      Vec3 aim = dragon.aimPoint(SUN_BEAM_RANGE);
+      Vec3 end = from.add(direction(from, aim, dragon).scale(SUN_BEAM_RANGE));
+      if (user != dragon) {
+         // aimPoint already stopped the rider's look ray at the first solid block
+         if (from.distanceToSqr(aim) < from.distanceToSqr(end)) {
+            end = aim;
+         }
+      } else {
+         BlockHitResult block = clipBlocks(dragon, from, end, Fluid.NONE);
+         if (block.getType() != Type.MISS) {
+            end = block.getLocation();
+         }
       }
 
-      return new Vec3[]{from, end, mouth};
+      return new SunBeam(from, end, mouth);
    }
 
    /** Every half second, hits each visible enemy within SUN_BEAM_WIDTH of the beam; undead take double and burn. */
    private static void sunBeamTick(DragonEntity dragon, ServerLevel level, int tick) {
-      Vec3[] beam = sunBeamLine(dragon);
-      Vec3 from = beam[0];
-      Vec3 end = beam[1];
-      Vec3 mouth = beam[2];
       RandomSource random = dragon.getRandom();
       if (tick == 0) {
-         sound(level, mouth, ModSounds.get("ability.sun_beam"), 2.5F, 0.95F + random.nextFloat() * 0.1F);
+         sound(level, dragon.mouthPosition(), ModSounds.get("ability.sun_beam"), 2.5F, 0.95F + random.nextFloat() * 0.1F);
       } else if (tick % 20 == 0) {
-         sound(level, mouth, ModSounds.get("ability.sun_beam"), 1.4F, 1.1F + random.nextFloat() * 0.1F);
+         sound(level, dragon.mouthPosition(), ModSounds.get("ability.sun_beam"), 1.4F, 1.1F + random.nextFloat() * 0.1F);
       }
 
       if (tick % 10 != 3) {
          return;
       }
 
+      SunBeam beam = sunBeamLine(dragon);
+      Vec3 from = beam.from();
+      Vec3 end = beam.end();
       float power = dragon.abilityPower();
       LivingEntity user = dragon.abilityUser();
       AABB search = new AABB(from, end).inflate(SUN_BEAM_WIDTH + 1.0);
@@ -564,9 +572,9 @@ public final class DragonAbilities {
 
    /** Client side particles around the sun beam, which SunBeamRenderer draws. */
    private static void sunBeamParticles(DragonEntity dragon, Level level, RandomSource random) {
-      Vec3[] beam = sunBeamLine(dragon);
-      Vec3 mouth = beam[2];
-      Vec3 end = beam[1];
+      SunBeam beam = sunBeamLine(dragon);
+      Vec3 mouth = beam.mouth();
+      Vec3 end = beam.end();
       Vec3 delta = end.subtract(mouth);
       double length = delta.length();
       if (length < 0.5) {
