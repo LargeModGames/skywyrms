@@ -971,5 +971,148 @@
         "name": "skywyrms:egg/hatch2"
       }
     ]
+  },
+  "dragon.solar.ambient": {
+    "subtitle": "subtitles.skywyrms.dragon.solar.ambient",
+    "sounds": [
+      {
+        "name": "minecraft:mob/enderdragon/growl1",
+        "pitch": 1.12,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/enderdragon/growl2",
+        "pitch": 1.12,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/enderdragon/growl3",
+        "pitch": 1.12,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/enderdragon/growl4",
+        "pitch": 1.12,
+        "volume": 1.0
+      }
+    ]
+  },
+  "dragon.solar.hurt": {
+    "subtitle": "subtitles.skywyrms.dragon.solar.hurt",
+    "sounds": [
+      {
+        "name": "minecraft:mob/enderdragon/hit1",
+        "pitch": 1.18,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/enderdragon/hit2",
+        "pitch": 1.18,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/enderdragon/hit3",
+        "pitch": 1.18,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/enderdragon/hit4",
+        "pitch": 1.18,
+        "volume": 1.0
+      }
+    ]
+  },
+  "dragon.solar.death": {
+    "subtitle": "subtitles.skywyrms.dragon.solar.death",
+    "sounds": [
+      {
+        "name": "minecraft:mob/ravager/death1",
+        "pitch": 0.9,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/ravager/death2",
+        "pitch": 0.9,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/ravager/death3",
+        "pitch": 0.9,
+        "volume": 1.0
+      }
+    ]
+  },
+  "dragon.solar.roar": {
+    "subtitle": "subtitles.skywyrms.dragon.solar.roar",
+    "sounds": [
+      {
+        "name": "minecraft:mob/ravager/roar1",
+        "pitch": 0.99,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/ravager/roar2",
+        "pitch": 0.99,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/ravager/roar3",
+        "pitch": 0.99,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/ravager/roar4",
+        "pitch": 0.99,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/enderdragon/growl1",
+        "pitch": 1.12,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/enderdragon/growl2",
+        "pitch": 1.12,
+        "volume": 1.0
+      }
+    ]
+  },
+  "dragon.solar.baby": {
+    "subtitle": "subtitles.skywyrms.dragon.solar.baby",
+    "sounds": [
+      {
+        "name": "minecraft:mob/enderdragon/growl1",
+        "pitch": 1.85,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/enderdragon/growl2",
+        "pitch": 1.85,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/enderdragon/growl3",
+        "pitch": 1.85,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/enderdragon/growl4",
+        "pitch": 1.85,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ability.sun_beam": {
+    "subtitle": "subtitles.skywyrms.ability.sun_beam",
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/activate",
+        "pitch": 1.4
+      },
+      {
+        "name": "minecraft:block/amethyst/shimmer",
+        "pitch": 0.8
+      }
+    ]
   }
 }

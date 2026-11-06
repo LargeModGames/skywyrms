@@ -2,12 +2,16 @@ package com.pokato.skywyrms.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.pokato.skywyrms.Skywyrms;
+import com.pokato.skywyrms.ability.DragonAbilities;
 import com.pokato.skywyrms.entity.DragonEntity;
 import com.pokato.skywyrms.entity.DragonKind;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState, DragonModel> {
    private final DragonKind kind;
@@ -39,7 +43,25 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
       super.extractRenderState(entity, state, partialTick);
       state.kind = this.kind;
       state.blood = entity.blood();
+      state.riderView = entity.localRiderFirstPerson();
       entity.anim.fill(state.anim, entity, partialTick);
+      state.beam = this.beaming(entity);
+      if (state.beam) {
+         // relative to the entity's current position, so the beam follows the smoothly interpolated model
+         DragonAbilities.SunBeam line = DragonAbilities.sunBeamLine(entity);
+         Vec3 end = line.end();
+         Vec3 start = line.mouth();
+         if (state.riderView) {
+            Vec3 delta = end.subtract(start);
+            double length = delta.length();
+            start = length > 3.0 ? start.add(delta.scale(2.5 / length)) : end;
+         }
+
+         Vec3 origin = entity.position();
+         state.beamStart = start.subtract(origin);
+         state.beamEnd = end.subtract(origin);
+         state.beamTime = entity.breathAge() + partialTick;
+      }
    }
 
    public Identifier getTextureLocation(DragonRenderState state) {
@@ -51,7 +73,26 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
       poseStack.scale(scale, scale, scale);
    }
 
+   @Override
+   public void submit(DragonRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+      super.submit(state, poseStack, collector, camera);
+      if (state.beam) {
+         SunBeamRenderer.submit(state, poseStack, collector);
+      }
+   }
+
    protected AABB getBoundingBoxForCulling(DragonEntity entity, float partialTick) {
-      return entity.renderBounds();
+      AABB box = entity.renderBounds();
+      if (this.beaming(entity)) {
+         // keep drawing the dragon (and its beam) while only the beam is on screen
+         Vec3 end = DragonAbilities.sunBeamLine(entity).end();
+         box = box.minmax(AABB.ofSize(end, 4.0, 4.0, 4.0));
+      }
+
+      return box;
+   }
+
+   private boolean beaming(DragonEntity entity) {
+      return this.kind.ability() == DragonKind.Ability.SUN_BEAM && entity.isBreathing() && entity.isAlive();
    }
 }

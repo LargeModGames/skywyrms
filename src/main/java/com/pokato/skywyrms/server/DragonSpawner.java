@@ -145,6 +145,10 @@ public final class DragonSpawner {
          options.add(DragonKind.EMBER);
       }
 
+      if (biome.is(Biomes.DESERT)) {
+         options.add(DragonKind.SOLAR);
+      }
+
       boolean cold = biome.is(BiomeTags.SPAWNS_SNOW_FOXES) || biome.is(BiomeTags.SPAWNS_COLD_VARIANT_FROGS);
       if (cold) {
          options.add(DragonKind.FROST);

@@ -99,6 +99,7 @@ public class DragonEntity extends TamableAnimal {
    public static volatile boolean descendKeyDown;
    public static volatile boolean sprintKeyDown;
    public static volatile boolean ascendKeyDown;
+   public static volatile boolean firstPersonView;
    public static final float SPRINT_BOOST = 1.3F;
    public static final float DIVE_MAX = 2.4F;
    private static final float DIVE_GAIN = 0.016F;
@@ -114,6 +115,7 @@ public class DragonEntity extends TamableAnimal {
    private boolean abilityHeld;
    private int abilityCooldown;
    private int breathTicks;
+   private int breathStartTick;
    private int aiBreathTicks;
    private int aiAbilityCooldown = 60;
    private boolean aiFlying;
@@ -272,6 +274,8 @@ public class DragonEntity extends TamableAnimal {
       super.onSyncedDataUpdated(accessor);
       if (DATA_GROWTH.equals(accessor)) {
          this.refreshDimensions();
+      } else if (DATA_BREATHING.equals(accessor) && this.isBreathing()) {
+         this.breathStartTick = this.tickCount;
       }
    }
 
@@ -376,6 +380,16 @@ public class DragonEntity extends TamableAnimal {
 
    public boolean isBreathing() {
       return this.entityData.get(DATA_BREATHING);
+   }
+
+   /** Ticks since this side saw the breath start, so client effects can follow the server's damage ticks. */
+   public int breathAge() {
+      return this.tickCount - this.breathStartTick;
+   }
+
+   /** Client side: the local player rides this dragon in first person, so head effects would block the view. */
+   public boolean localRiderFirstPerson() {
+      return firstPersonView && this.hasPassenger(e -> e instanceof Player p && p.isLocalPlayer());
    }
 
    public int getEnergy() {
@@ -509,6 +523,10 @@ public class DragonEntity extends TamableAnimal {
             DragonAbilities.breathParticles(this);
          }
 
+         if (this.kind == DragonKind.SOLAR && this.isAlive() && !this.localRiderFirstPerson()) {
+            this.solarSparks();
+         }
+
          if (this.anim.stoop > 0.35F) {
             this.diveTrail();
          }
@@ -574,6 +592,12 @@ public class DragonEntity extends TamableAnimal {
       int shown = Math.round(this.energy);
       if (shown != this.getEnergy()) {
          this.entityData.set(DATA_ENERGY, shown);
+      }
+
+      if (this.tickCount % 100 == 0
+         && this.hasElement(DragonKind.SOLAR)
+         && inSunlight(level, this.blockPosition())) {
+         this.heal(1.0F);
       }
 
       if (this.tickCount % 20 == 0) {
@@ -748,6 +772,11 @@ public class DragonEntity extends TamableAnimal {
       return this.rig.mouth(this);
    }
 
+   /** Daytime with open sky above: solar wyrms heal and solar eggs incubate here. */
+   public static boolean inSunlight(Level level, BlockPos pos) {
+      return level.isBrightOutside() && level.canSeeSky(pos.above());
+   }
+
    public static Vec3 viewVector(float xRot, float yRot) {
       float pitch = xRot * (float) (Math.PI / 180.0);
       float yaw = -yRot * (float) (Math.PI / 180.0);
@@ -886,6 +915,7 @@ public class DragonEntity extends TamableAnimal {
          case THORN -> 0.72F;
          case VOID -> 0.62F;
          case TIDE -> 0.98F;
+         case SOLAR -> 1.15F;
       };
    }
 
@@ -894,7 +924,7 @@ public class DragonEntity extends TamableAnimal {
          case EMBER, THORN -> 0.85F;
          case FROST, STORM -> 1.1F;
          case VOID -> 0.8F;
-         case TIDE -> 1.0F;
+         case TIDE, SOLAR -> 1.0F;
       };
    }
 
@@ -965,6 +995,7 @@ public class DragonEntity extends TamableAnimal {
          case THORN -> ParticleTypes.SPORE_BLOSSOM_AIR;
          case VOID -> ParticleTypes.REVERSE_PORTAL;
          case TIDE -> ParticleTypes.BUBBLE_POP;
+         case SOLAR -> ParticleTypes.WAX_ON;
       };
    }
 
@@ -1500,6 +1531,28 @@ public class DragonEntity extends TamableAnimal {
             double z = this.getZ() + rightZ * half * side + (this.random.nextDouble() - 0.5) * 0.6;
             this.level().addParticle(ParticleTypes.CLOUD, x, y + (this.random.nextDouble() - 0.5) * 0.6, z, 0.0, 0.02, 0.0);
          }
+      }
+   }
+
+   /** Golden sparks rising from the solar wyrm's corona and back spines, like solar flares. */
+   private void solarSparks() {
+      if (this.tickCount % 2 != 0) {
+         return;
+      }
+
+      Level level = this.level();
+      float size = this.getAgeScale() * this.kind.scale();
+      Vec3 forward = viewVector(0.0F, this.yBodyRot);
+      // corona sits on top of the head, a little behind the mouth
+      Vec3 crown = this.mouthPosition().add(forward.scale(-1.3 * size)).add(0.0, 1.1 * size, 0.0);
+      level.addParticle(ParticleTypes.WAX_ON, crown.x + (this.random.nextDouble() - 0.5) * 1.2 * size, crown.y + this.random.nextDouble() * 0.6 * size,
+         crown.z + (this.random.nextDouble() - 0.5) * 1.2 * size, 0.0, 0.03, 0.0);
+      // along the back spines, from shoulders to tail
+      double along = (this.random.nextDouble() - 0.35) * 3.2 * size;
+      Vec3 back = this.position().add(forward.scale(-along)).add(0.0, this.getBbHeight() * 0.95, 0.0);
+      level.addParticle(ParticleTypes.WAX_ON, back.x, back.y + this.random.nextDouble() * 0.5 * size, back.z, 0.0, 0.04, 0.0);
+      if (this.random.nextInt(6) == 0) {
+         level.addParticle(ParticleTypes.SMALL_FLAME, crown.x, crown.y + 0.3 * size, crown.z, 0.0, 0.02, 0.0);
       }
    }
 

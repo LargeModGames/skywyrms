@@ -34,7 +34,7 @@ public final class HudBar {
          out.append(glyphs((char)(57441 + k) + move(-20), color));
       }
 
-      out.append(glyphs(move(4) + (char)(57360 + kind.ordinal() * 6 + blood.ordinal()) + move(4), 16777215));
+      out.append(glyphs(move(4) + (char)(57360 + kind.ordinal() * DragonKind.values().length + blood.ordinal()) + move(4), 16777215));
       out.append(Component.literal(" "));
       out.append(Component.translatable("ability.skywyrms." + kind.ability().id()).withColor(kind.color()));
       if (blood != kind) {

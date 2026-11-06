@@ -256,6 +256,7 @@ public class DragonEggEntity extends Mob {
                level, pos, 2, state -> state.is(Blocks.OBSIDIAN) || state.is(Blocks.CRYING_OBSIDIAN) || state.is(Blocks.END_STONE) || state.is(Blocks.END_ROD)
             );
          case TIDE -> this.isInWater();
+         case SOLAR -> DragonEntity.inSunlight(level, pos);
       };
    }
 

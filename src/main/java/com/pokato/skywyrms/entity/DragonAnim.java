@@ -201,10 +201,13 @@ public final class DragonAnim {
       float bodyYaw = dragon.yBodyRot * (float) (Math.PI / 180.0);
       float lateral = (float)(dx * -Mth.cos(bodyYaw) + dz * -Mth.sin(bodyYaw));
       float sideTarget = Mth.clamp(lateral / top, -1.0F, 1.0F);
-      this.speed = this.speed + (speedTarget - this.speed) * 0.2F;
-      this.vertVel = this.vertVel + (vertTarget - this.vertVel) * 0.2F;
-      this.yawVel = this.yawVel + (yawTarget - this.yawVel) * 0.18F;
-      this.sideVel = this.sideVel + (sideTarget - this.sideVel) * 0.2F;
+      // the solar wyrm eases into every change more slowly, so its flight reads as one smooth motion
+      boolean calm = dragon.getKind() == DragonKind.SOLAR;
+      float ease = calm ? 0.1F : 0.2F;
+      this.speed = this.speed + (speedTarget - this.speed) * ease;
+      this.vertVel = this.vertVel + (vertTarget - this.vertVel) * ease;
+      this.yawVel = this.yawVel + (yawTarget - this.yawVel) * (calm ? 0.1F : 0.18F);
+      this.sideVel = this.sideVel + (sideTarget - this.sideVel) * ease;
       float stoopTarget = flying ? Mth.clamp(((float)(-dy) / top - 0.95F) / 0.75F, 0.0F, 1.0F) : 0.0F;
       this.stoop = this.stoop + (stoopTarget - this.stoop) * 0.12F;
       float pitchTarget = 0.0F;
@@ -223,16 +226,16 @@ public final class DragonAnim {
          rollTarget *= 1.0F - 0.7F * this.flare;
       }
 
-      this.pitch = this.pitch + (pitchTarget - this.pitch) * 0.15F;
-      this.roll = this.roll + (rollTarget - this.roll) * 0.12F;
-      boolean beatBurst = (dragon.tickCount + dragon.getId() * 13) % 130 < 42;
+      this.pitch = this.pitch + (pitchTarget - this.pitch) * (calm ? 0.08F : 0.15F);
+      this.roll = this.roll + (rollTarget - this.roll) * (calm ? 0.07F : 0.12F);
+      boolean beatBurst = !calm && (dragon.tickCount + dragon.getId() * 13) % 130 < 42;
       boolean glideNow = flying
          && this.airTicks > 20
          && this.speed > 0.55F
          && this.vertVel <= 0.08F
          && (!beatBurst || this.vertVel < -0.25F)
          && this.flare < 0.3F;
-      this.glide = approach(this.glide, glideNow ? 1.0F : 0.0F, 0.1F);
+      this.glide = approach(this.glide, glideNow ? 1.0F : 0.0F, calm ? 0.04F : 0.1F);
       float rate;
       if (!flying) {
          rate = 0.1F;
@@ -243,13 +246,13 @@ public final class DragonAnim {
       } else if (this.vertVel > 0.3F) {
          rate = 0.4F;
       } else if (this.speed < 0.15F) {
-         rate = 0.36F;
+         rate = calm ? 0.25F : 0.36F;
       } else {
          rate = 0.26F;
       }
 
       rate = Mth.lerp(this.glide, rate, 0.05F) * dragon.getKind().flapRate();
-      this.flapRate = this.flapRate + (rate - this.flapRate) * 0.2F;
+      this.flapRate = this.flapRate + (rate - this.flapRate) * (calm ? 0.08F : 0.2F);
       this.flapPhase = this.flapPhase + this.flapRate;
       boolean beat = flying && this.glide < 0.6F && wrapsPast(this.flapPhaseO, this.flapPhase, (float) (Math.PI / 2));
       if (this.flapPhase > (float) (Math.PI * 2)) {

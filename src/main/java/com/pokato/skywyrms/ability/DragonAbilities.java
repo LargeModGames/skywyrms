@@ -18,7 +18,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -44,10 +46,20 @@ import net.minecraft.world.phys.HitResult.Type;
 
 public final class DragonAbilities {
    public static final double BREATH_RANGE = 20.0;
+   public static final double SUN_BEAM_RANGE = 96.0;
+   /** How far (in blocks) from the beam line a target can be and still be hit. */
+   public static final double SUN_BEAM_WIDTH = 2.0;
+   /** Ticks between sun beam hits, and the tick of each period on which the hit lands. */
+   private static final int SUN_BEAM_PERIOD = 10;
+   private static final int SUN_BEAM_HIT = 3;
    private static final double CONE_SLOPE = 0.26;
    private static final double FX = 1.33;
 
    private DragonAbilities() {
+   }
+
+   private static boolean sunBeamHit(int breathTick) {
+      return breathTick % SUN_BEAM_PERIOD == SUN_BEAM_HIT;
    }
 
    public static int cost(DragonKind.Ability ability) {
@@ -73,6 +85,7 @@ public final class DragonAbilities {
          case LIGHTNING -> 34.0;
          case VENOM_SPIT -> 29.0;
          case VOID_BLINK -> 26.0;
+         case SUN_BEAM -> 40.0;
          default -> 14.5;
       };
    }
@@ -147,6 +160,11 @@ public final class DragonAbilities {
    public static void breathParticles(DragonEntity dragon) {
       Level level = dragon.level();
       RandomSource random = dragon.getRandom();
+      if (dragon.getKind().ability() == DragonKind.Ability.SUN_BEAM) {
+         sunBeamParticles(dragon, level, random);
+         return;
+      }
+
       Vec3 mouth = dragon.mouthPosition();
       Vec3 dir = direction(mouth, dragon.aimPoint(20.0), dragon);
       Vec3 carry = new Vec3(dragon.getX() - dragon.xo, dragon.getY() - dragon.yo, dragon.getZ() - dragon.zo);
@@ -211,6 +229,7 @@ public final class DragonAbilities {
          case THORN -> ModParticles.venom();
          case VOID -> ModParticles.voidWisp();
          case TIDE -> ModParticles.tide();
+         case SOLAR -> ParticleTypes.END_ROD;
       };
    }
 
@@ -274,6 +293,13 @@ public final class DragonAbilities {
                if (target.isSensitiveToWater() || target.fireImmune()) {
                   target.hurtServer(level, dragon.abilityDamage(DamageTypes.MOB_ATTACK), 3.0F * power);
                }
+               break;
+            case SOLAR:
+               target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 80, 0), dragon);
+               if (target.typeHolder().is(EntityTypeTags.UNDEAD)) {
+                  target.igniteForSeconds(4.0F);
+                  target.hurtServer(level, dragon.abilityDamage(DamageTypes.INDIRECT_MAGIC), 3.0F * power);
+               }
          }
       }
    }
@@ -299,6 +325,11 @@ public final class DragonAbilities {
 
    public static void breathTick(DragonEntity dragon, ServerLevel level, int tick) {
       DragonKind.Ability ability = dragon.getKind().ability();
+      if (ability == DragonKind.Ability.SUN_BEAM) {
+         sunBeamTick(dragon, level, tick);
+         return;
+      }
+
       Vec3 mouth = dragon.mouthPosition();
       Vec3 dir = direction(mouth, dragon.aimPoint(20.0), dragon);
       RandomSource random = dragon.getRandom();
@@ -461,6 +492,147 @@ public final class DragonAbilities {
       };
    }
 
+   /** The sun beam aims from `from` (the rider's eyes, or the mouth without a rider) to `end`, and is drawn from `mouth`. */
+   public record SunBeam(Vec3 from, Vec3 end, Vec3 mouth) {
+   }
+
+   public static SunBeam sunBeamLine(DragonEntity dragon) {
+      Vec3 mouth = dragon.mouthPosition();
+      LivingEntity user = dragon.abilityUser();
+      Vec3 from = user != dragon ? user.getEyePosition() : mouth;
+      Vec3 end = from.add(direction(from, dragon.aimPoint(SUN_BEAM_RANGE), dragon).scale(SUN_BEAM_RANGE));
+      BlockHitResult block = clipBlocks(dragon, from, end, Fluid.NONE);
+      if (block.getType() != Type.MISS) {
+         end = block.getLocation();
+      }
+
+      return new SunBeam(from, end, mouth);
+   }
+
+   /** A unit vector at right angles to the beam direction, horizontal unless the beam is vertical. */
+   public static Vec3 beamSide(Vec3 dir) {
+      Vec3 u = dir.cross(new Vec3(0.0, 1.0, 0.0));
+      return u.lengthSqr() < 1.0E-4 ? new Vec3(1.0, 0.0, 0.0) : u.normalize();
+   }
+
+   /** Flare strength 0..1 of the sun beam: 1 on each hit, fading out over the next three ticks. */
+   public static float sunBeamFlare(float breathAge) {
+      float phase = Mth.positiveModulo(breathAge - SUN_BEAM_HIT, SUN_BEAM_PERIOD) / SUN_BEAM_PERIOD;
+      return phase < 0.3F ? 1.0F - phase / 0.3F : 0.0F;
+   }
+
+   /** Every half second, hits each visible enemy within SUN_BEAM_WIDTH of the beam; undead take double and burn. */
+   private static void sunBeamTick(DragonEntity dragon, ServerLevel level, int tick) {
+      RandomSource random = dragon.getRandom();
+      if (tick == 0) {
+         sound(level, dragon.mouthPosition(), ModSounds.get("ability.sun_beam"), 2.5F, 0.95F + random.nextFloat() * 0.1F);
+      } else if (tick % 20 == 0) {
+         sound(level, dragon.mouthPosition(), ModSounds.get("ability.sun_beam"), 1.4F, 1.1F + random.nextFloat() * 0.1F);
+      }
+
+      if (!sunBeamHit(tick)) {
+         return;
+      }
+
+      SunBeam beam = sunBeamLine(dragon);
+      Vec3 from = beam.from();
+      Vec3 end = beam.end();
+      float power = dragon.abilityPower();
+      LivingEntity user = dragon.abilityUser();
+      AABB search = new AABB(from, end).inflate(SUN_BEAM_WIDTH + 1.0);
+
+      for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, search, dragon::canAbilityHit)) {
+         AABB reach = target.getBoundingBox().inflate(SUN_BEAM_WIDTH);
+         if (target != user
+            && (reach.contains(from) || reach.clip(from, end).isPresent())
+            && clearPath(dragon, from, target.getBoundingBox().getCenter())) {
+            boolean undead = target.typeHolder().is(EntityTypeTags.UNDEAD);
+            target.hurtServer(level, dragon.abilityDamage(DamageTypes.MOB_ATTACK), (undead ? 16.0F : 8.0F) * power);
+            if (undead) {
+               target.igniteForSeconds(4.0F);
+            }
+
+            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0), dragon);
+            infuse(dragon, level, target);
+         }
+      }
+   }
+
+   /** Client side particles around the sun beam, which SunBeamRenderer draws. */
+   private static void sunBeamParticles(DragonEntity dragon, Level level, RandomSource random) {
+      SunBeam beam = sunBeamLine(dragon);
+      Vec3 mouth = beam.mouth();
+      Vec3 end = beam.end();
+      Vec3 delta = end.subtract(mouth);
+      double length = delta.length();
+      if (length < 0.5) {
+         return;
+      }
+
+      Vec3 dir = delta.scale(1.0 / length);
+      Vec3 u = beamSide(dir);
+      Vec3 v = u.cross(dir);
+      float t = dragon.tickCount;
+      double pulse = 0.5 + 0.5 * Math.sin(t * 0.55);
+
+      // two spiral strands twisting along the beam (every other tick keeps the particle count sane)
+      if (dragon.tickCount % 2 == 0) {
+         double spiralR = 1.4 + 0.5 * pulse;
+         int points = (int)Math.min(80.0, Math.max(2.0, length / 1.2));
+         for (int i = 0; i <= points; i++) {
+            double d = 2.5 + (length - 2.5) * i / points;
+            Vec3 p = mouth.add(dir.scale(d));
+            double a = d * 0.8 + t * 0.6;
+            for (int s = 0; s < 2; s++) {
+               double aa = a + Math.PI * s;
+               Vec3 q = p.add(u.scale(Math.cos(aa) * spiralR)).add(v.scale(Math.sin(aa) * spiralR));
+               level.addParticle(ParticleTypes.WAX_ON, true, false, q.x, q.y, q.z, 0.0, 0.0, 0.0);
+            }
+         }
+      }
+
+      // a burst of sparks along the whole beam on every flare
+      if (sunBeamHit(dragon.breathAge())) {
+         for (double d = 2.5; d < length; d += 1.5) {
+            Vec3 p = mouth.add(dir.scale(d));
+            level.addParticle(ParticleTypes.ELECTRIC_SPARK, true, false, p.x, p.y, p.z,
+               (random.nextDouble() - 0.5) * 0.5, (random.nextDouble() - 0.5) * 0.5, (random.nextDouble() - 0.5) * 0.5);
+         }
+      }
+
+      // starburst where the beam lands
+      for (int i = 0; i < 8; i++) {
+         level.addParticle(ParticleTypes.FIREWORK, true, false, end.x, end.y, end.z,
+            (random.nextDouble() - 0.5) * 0.7, random.nextDouble() * 0.5, (random.nextDouble() - 0.5) * 0.7);
+      }
+
+      for (int i = 0; i < 4; i++) {
+         level.addParticle(ParticleTypes.WAX_ON, true, false, end.x, end.y, end.z,
+            (random.nextDouble() - 0.5) * 1.2, random.nextDouble() * 0.8, (random.nextDouble() - 0.5) * 1.2);
+      }
+
+      if (dragon.tickCount % 5 == 0) {
+         // expanding ring of light around the impact, facing back along the beam
+         for (int i = 0; i < 24; i++) {
+            double a = Math.PI * 2.0 * i / 24;
+            Vec3 out = u.scale(Math.cos(a)).add(v.scale(Math.sin(a))).scale(0.45);
+            level.addParticle(ParticleTypes.END_ROD, true, false, end.x, end.y, end.z, out.x, out.y, out.z);
+         }
+      }
+
+      if (dragon.localRiderFirstPerson()) {
+         return;
+      }
+
+      // ball of light in the mouth: sparks orbiting on two tilted circles around a bright core
+      level.addParticle(ParticleTypes.END_ROD, true, false, mouth.x, mouth.y, mouth.z, 0.0, 0.0, 0.0);
+      for (int i = 0; i < 8; i++) {
+         double a = t * 0.8 + Math.PI * 2.0 * i / 8;
+         Vec3 ring = u.scale(Math.cos(a)).add((i % 2 == 0 ? v : dir).scale(Math.sin(a)));
+         Vec3 q = mouth.add(ring.scale(0.8 + 0.2 * pulse));
+         level.addParticle(ParticleTypes.WAX_ON, true, false, q.x, q.y, q.z, 0.0, 0.0, 0.0);
+      }
+   }
    private static boolean lightning(DragonEntity dragon, ServerLevel level, Vec3 mouth) {
       Vec3 impact = impactPoint(dragon, mouth, 85.0);
       LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
