@@ -88,7 +88,8 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
       AABB box = entity.renderBounds();
       if (this.kind.ability() == DragonKind.Ability.SUN_BEAM && entity.isBreathing()) {
          // keep drawing the dragon (and its beam) while only the beam is on screen
-         box = box.minmax(new AABB(DragonAbilities.sunBeamLine(entity)[1], DragonAbilities.sunBeamLine(entity)[1]).inflate(2.0));
+         Vec3 end = DragonAbilities.sunBeamLine(entity)[1];
+         box = box.minmax(new AABB(end, end).inflate(2.0));
       }
 
       return box;
