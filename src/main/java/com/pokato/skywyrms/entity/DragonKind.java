@@ -128,7 +128,7 @@ public enum DragonKind {
       VENOM_SPIT(false, "venom_spit"),
       VOID_BLINK(false, "void_blink"),
       TIDAL_JET(true, "tidal_jet"),
-      SUN_BEAM(false, "sun_beam");
+      SUN_BEAM(true, "sun_beam");
 
       private final boolean held;
       private final String id;
