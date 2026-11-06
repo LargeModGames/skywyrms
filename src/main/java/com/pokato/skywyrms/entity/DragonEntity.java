@@ -509,6 +509,10 @@ public class DragonEntity extends TamableAnimal {
             DragonAbilities.breathParticles(this);
          }
 
+         if (this.kind == DragonKind.SOLAR && this.isAlive()) {
+            DragonAbilities.solarSparks(this);
+         }
+
          if (this.anim.stoop > 0.35F) {
             this.diveTrail();
          }

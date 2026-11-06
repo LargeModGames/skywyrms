@@ -86,8 +86,19 @@ public static class Solar {
         Blend(p,255,(int)(252-40*dist),(int)(240-120*dist),0.85);
         double ray=Math.Pow(Math.Max(0,Math.Cos(ang*18)),24)*(1-dist*0.5);
         if(ray>0.05){Blend(p,252,200,50,Math.Min(0.85,ray*1.2));Glow(p,ray*1.3);}}}
-    var rnd=new Random(5);
-    // GOLD block (horns, crown disc, tail rays): not glowing
+    // a glowing sun on every membrane panel (panel box x0,y0,x1,y1 and sun centre cx,cy in 512px texture space)
+    int[] suns={122,2,222,108,165,58, 226,2,330,120,268,60, 330,18,410,120,372,62, 410,18,492,120,452,62, 102,125,175,226,148,195, 175,125,290,226,235,190};
+    for(int q=0;q+5<suns.Length;q+=6){int x0=suns[q],y0=suns[q+1],x1=suns[q+2],y1=suns[q+3];double scx=suns[q+4],scy=suns[q+5],R=Math.Min(x1-x0,y1-y0)*0.17;
+      for(int y=y0;y<y1&&y<H;y++)for(int x=x0;x<x1&&x<W;x++){int p=y*W+x;if(px[p*4+3]==0)continue;
+        double dx=x+0.5-scx,dy=y+0.5-scy,d=Math.Sqrt(dx*dx+dy*dy),a=Math.Atan2(dy,dx);
+        double ray=Math.Pow(Math.Max(0,Math.Cos(a*6)),4),ray2=Math.Pow(Math.Max(0,Math.Cos(a*6+Math.PI/2)),6);
+        if(d<R*0.62){Blend(p,255,252,232,1.0);Glow(p,1.0);}
+        else if(d<R*0.85){Blend(p,255,226,110,1.0);Glow(p,1.0);}
+        else if(d<R){Blend(p,255,170,45,0.95);Glow(p,0.9);}
+        else if(d<R*2.6&&ray>0.55){double fade=1-(d-R)/(R*1.6);Blend(p,255,200,60,0.85*fade+0.15);Glow(p,0.85*fade+0.15);}
+        else if(d<R*1.8&&ray2>0.55){double fade=1-(d-R)/(R*0.8);Blend(p,255,185,55,0.8*fade);Glow(p,0.7*fade);}
+      }
+    }    var rnd=new Random(5);    // GOLD block (horns, crown disc, tail rays): not glowing
     for(int ty=208;ty<240;ty++)for(int tx=0;tx<128;tx++){double t=rnd.NextDouble();int G=(int)(205+t*42),B=(int)(70+t*90);if(t>0.92){G=250;B=220;}
       for(int yy=0;yy<sc;yy++)for(int xx=0;xx<sc;xx++)Put(tx*sc+xx,ty*sc+yy,255,G,B,0);}
     // RAY block (crown rays, spines): tips orange-gold -> yellow -> white-gold, all glowing
