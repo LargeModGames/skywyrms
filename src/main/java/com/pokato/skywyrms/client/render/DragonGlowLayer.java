@@ -40,7 +40,7 @@ public class DragonGlowLayer extends RenderLayer<DragonRenderState, DragonModel>
       this.model = new DragonModel(DragonModel.createLayer(kind, lit::contains).bakeRoot(), geo);
    }
 
-   /** RenderTypes.eyes without sortOnUpload: glow writes no depth over the dragon's own opaque faces, so sorting changes nothing. */
+   /** RenderTypes.eyes minus sortOnUpload, which changes nothing for glow drawn on the dragon's own faces. */
    private static RenderType glow(Identifier texture) {
       return RenderType.create(
          "skywyrms_glow",

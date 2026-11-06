@@ -44,10 +44,6 @@ public class DragonModel extends EntityModel<DragonRenderState> {
       }
    }
 
-   public static LayerDefinition createLayer(DragonKind kind) {
-      return createLayer(kind, cube -> true);
-   }
-
    /** Every part of the kind's model, with only the cubes that pass the filter. */
    public static LayerDefinition createLayer(DragonKind kind, Predicate<GeoData.Cube> keep) {
       GeoData geo = kind.geo();
