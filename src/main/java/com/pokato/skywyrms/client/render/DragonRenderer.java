@@ -5,7 +5,6 @@ import com.pokato.skywyrms.Skywyrms;
 import com.pokato.skywyrms.ability.DragonAbilities;
 import com.pokato.skywyrms.entity.DragonEntity;
 import com.pokato.skywyrms.entity.DragonKind;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
@@ -44,8 +43,7 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
       super.extractRenderState(entity, state, partialTick);
       state.kind = this.kind;
       state.blood = entity.blood();
-      Minecraft minecraft = Minecraft.getInstance();
-      state.riderView = minecraft.player != null && entity.hasPassenger(minecraft.player) && minecraft.options.getCameraType().isFirstPerson();
+      state.riderView = entity.localRiderFirstPerson();
       entity.anim.fill(state.anim, entity, partialTick);
       state.beam = this.kind.ability() == DragonKind.Ability.SUN_BEAM && entity.isBreathing() && entity.isAlive();
       if (state.beam) {

@@ -387,6 +387,11 @@ public class DragonEntity extends TamableAnimal {
       return this.tickCount - this.breathStartTick;
    }
 
+   /** Client side: the local player rides this dragon in first person, so head effects would block the view. */
+   public boolean localRiderFirstPerson() {
+      return firstPersonView && this.hasPassenger(e -> e instanceof Player p && p.isLocalPlayer());
+   }
+
    public int getEnergy() {
       return this.entityData.get(DATA_ENERGY);
    }
@@ -518,7 +523,7 @@ public class DragonEntity extends TamableAnimal {
             DragonAbilities.breathParticles(this);
          }
 
-         if (this.kind == DragonKind.SOLAR && this.isAlive() && !(firstPersonView && this.hasPassenger(e -> e instanceof Player p && p.isLocalPlayer()))) {
+         if (this.kind == DragonKind.SOLAR && this.isAlive() && !this.localRiderFirstPerson()) {
             DragonAbilities.solarSparks(this);
          }
 

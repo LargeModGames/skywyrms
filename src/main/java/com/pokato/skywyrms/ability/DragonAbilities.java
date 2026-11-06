@@ -649,6 +649,10 @@ public final class DragonAbilities {
          }
       }
 
+      if (dragon.localRiderFirstPerson()) {
+         return;
+      }
+
       // ball of light in the mouth: sparks orbiting on two tilted circles around a bright core
       level.addParticle(ParticleTypes.END_ROD, true, false, mouth.x, mouth.y, mouth.z, 0.0, 0.0, 0.0);
       for (int i = 0; i < 8; i++) {
