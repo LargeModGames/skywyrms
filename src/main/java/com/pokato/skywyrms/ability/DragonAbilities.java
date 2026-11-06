@@ -574,7 +574,6 @@ public final class DragonAbilities {
       Vec3 v = u.cross(dir);
       float t = dragon.tickCount;
       double pulse = 0.5 + 0.5 * Math.sin(t * 0.55);
-      boolean flare = sunBeamHit(dragon.breathAge());
 
       // two spiral strands twisting along the beam (every other tick keeps the particle count sane)
       if (dragon.tickCount % 2 == 0) {
@@ -593,7 +592,7 @@ public final class DragonAbilities {
       }
 
       // a burst of sparks along the whole beam on every flare
-      if (flare) {
+      if (sunBeamHit(dragon.breathAge())) {
          for (double d = 2.5; d < length; d += 1.5) {
             Vec3 p = mouth.add(dir.scale(d));
             level.addParticle(ParticleTypes.ELECTRIC_SPARK, true, false, p.x, p.y, p.z,
