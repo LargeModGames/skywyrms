@@ -1,8 +1,6 @@
 ﻿#Requires -PSEdition Desktop
 param([string]$SrcGeo, [string]$SrcTex, [string]$OutGeo, [string]$OutTex, [string]$SrcGlow, [string]$OutGlow)
-# Solar wyrm: storm wyrm body (same size) with a sun look. A corona of eleven rays behind the head, tall
-# sun-ray spines with fiery tips, golden horns, a sun disc on the chest, a fan of rays on the tail tip,
-# warm gold scales with white-hot veins, and wings that glow from white at the arm to sunset orange.
+# Solar wyrm: the storm wyrm body in gold, with a corona, sun-ray spines and a tail fan of rays.
 $ErrorActionPreference = 'Stop'
 $gd = Get-Content $SrcGeo -Raw | ConvertFrom-Json
 # painted blocks in the free bottom of the sheet
@@ -28,22 +26,18 @@ foreach ($p in $gd.parts) {
     if ($p.name -eq 'head') {
         # turned a quarter so the rider sees it edge-on (a crest of rays seen from the side)
         $out.Add((Part 'deco_crown' 'head' @(0.0, -5.5, 2.0) @(-10.0, 90.0, 0.0) (Cube @(-2.0, -2.0, -0.5) @(4, 4, 1))))
-        $i = 0
-        for ($a = -100; $a -le 100; $a += 20) {
+        for ($i = 0; $i -lt 11; $i++) {
             $len = $(if ($i % 2 -eq 0) { 8 } else { 5 })
-            $out.Add((Part "deco_crown_ray_$i" 'deco_crown' @(0.0, 0.0, 0.0) @(0.0, 0.0, [double]$a) (Cube @(-0.5, (-2.5 - $len), -0.5) @(1, $len, 1) $RAY)))
-            $i++
+            $out.Add((Part "deco_crown_ray_$i" 'deco_crown' @(0.0, 0.0, 0.0) @(0.0, 0.0, [double](-100 + 20 * $i)) (Cube @(-0.5, (-2.5 - $len), -0.5) @(1, $len, 1) $RAY)))
         }
     }
 
     # tail tip: the fork becomes a fan of five rays
     if ($p.name -eq 'deco_tailfork') {
         $p.cubes = @(Cube @(-1.5, -1.5, -1.0) @(3, 3, 3))
-        $i = 0
-        foreach ($a in -60, -30, 0, 30, 60) {
+        for ($i = 0; $i -lt 5; $i++) {
             $len = @(6, 4, 8, 4, 6)[$i]
-            $out.Add((Part "deco_tailsun_$i" 'deco_tailfork' @(0.0, 0.0, 1.5) @([double]$a, 0.0, 0.0) (Cube @(-0.5, -0.5, 0.0) @(1, 1, $len))))
-            $i++
+            $out.Add((Part "deco_tailsun_$i" 'deco_tailfork' @(0.0, 0.0, 1.5) @([double](-60 + 30 * $i), 0.0, 0.0) (Cube @(-0.5, -0.5, 0.0) @(1, 1, $len))))
         }
     }
     if ($p.name -match '^deco_prong_') { $p.cubes = @() }

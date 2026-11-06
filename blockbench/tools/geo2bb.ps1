@@ -53,14 +53,15 @@ function GroupJson($g) {
     "{`"name`":`"$(Esc $g.name)`",`"origin`":$(Arr $g.origin),`"rotation`":$(Arr $g.rot),`"color`":0,`"uuid`":`"$($g.uuid)`",`"export`":true,`"mirror_uv`":false,`"isOpen`":false,`"locked`":false,`"visibility`":$(($Hide -notcontains $g.name).ToString().ToLower()),`"autouv`":0,`"children`":[$kids]}"
 }
 
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($Tex))
-$texName = [IO.Path]::GetFileName($Tex)
 $tw = $gd.texture_size[0]; $th = $gd.texture_size[1]
-$texJson = "{`"path`":`"`",`"name`":`"$texName`",`"folder`":`"entity`",`"namespace`":`"skywyrms`",`"id`":`"0`",`"width`":$tw,`"height`":$th,`"uv_width`":$tw,`"uv_height`":$th,`"particle`":false,`"render_mode`":`"default`",`"render_sides`":`"auto`",`"visible`":true,`"mode`":`"bitmap`",`"saved`":true,`"uuid`":`"$([guid]::NewGuid())`",`"source`":`"data:image/png;base64,$b64`"}"
+function TexJson($path, $id, $mode) {
+    $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($path))
+    "{`"path`":`"`",`"name`":`"$([IO.Path]::GetFileName($path))`",`"folder`":`"entity`",`"namespace`":`"skywyrms`",`"id`":`"$id`",`"width`":$tw,`"height`":$th,`"uv_width`":$tw,`"uv_height`":$th,`"particle`":false,`"render_mode`":`"$mode`",`"render_sides`":`"auto`",`"visible`":true,`"mode`":`"bitmap`",`"saved`":true,`"uuid`":`"$([guid]::NewGuid())`",`"source`":`"data:image/png;base64,$b64`"}"
+}
+$texJson = TexJson $Tex 0 'default'
 if ($Glow) {
     # glow overlay: Blockbench draws "layered" textures on top of the base one
-    $g64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($Glow))
-    $texJson += ",{`"path`":`"`",`"name`":`"$([IO.Path]::GetFileName($Glow))`",`"folder`":`"entity`",`"namespace`":`"skywyrms`",`"id`":`"1`",`"width`":$tw,`"height`":$th,`"uv_width`":$tw,`"uv_height`":$th,`"particle`":false,`"render_mode`":`"layered`",`"render_sides`":`"auto`",`"visible`":true,`"mode`":`"bitmap`",`"saved`":true,`"uuid`":`"$([guid]::NewGuid())`",`"source`":`"data:image/png;base64,$g64`"}"
+    $texJson += ',' + (TexJson $Glow 1 'layered')
 }
 
 $modelName = [IO.Path]::GetFileNameWithoutExtension($Out)
