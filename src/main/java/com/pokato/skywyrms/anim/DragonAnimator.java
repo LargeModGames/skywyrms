@@ -293,8 +293,8 @@ public final class DragonAnimator {
          if (F.hoverSway > 0.0F && hover > 0.001F) {
             // dangling legs swing a little behind the wing beat
             for (String leg : new String[]{"leg_fl_shin", "leg_fr_shin", "leg_bl_shin", "leg_br_shin"}) {
-               Bone shin = s.get(leg);
-               if (shin != null) {
+               if (s.has(leg)) {
+                  Bone shin = s.get(leg);
                   shin.rx = shin.rx + hover * F.hoverSway * 0.08F * sin(f - 2.2F);
                }
             }

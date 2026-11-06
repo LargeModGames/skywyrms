@@ -23,6 +23,8 @@ public class DragonModel extends EntityModel<DragonRenderState> {
    private final Skeleton skeleton = new Skeleton();
    private final ModelPart[] parts;
    private final Bone[] bones;
+   /** Root of the neck chain (neck, head, jaw and their decorations), hidden in the rider's first-person view. */
+   private final ModelPart neck;
    private static final float SHEET_GAP = 0.1F;
 
    public DragonModel(ModelPart root, GeoData geo) {
@@ -45,9 +47,6 @@ public class DragonModel extends EntityModel<DragonRenderState> {
 
       this.neck = byName.get("neck1");
    }
-
-   /** Root of the neck chain (neck, head, jaw and their decorations), hidden in the rider's first-person view. */
-   private ModelPart neck;
 
    /** Every part of the kind's model, with only the cubes that pass the filter. */
    public static LayerDefinition createLayer(DragonKind kind, Predicate<GeoData.Cube> keep) {
@@ -118,7 +117,7 @@ public class DragonModel extends EntityModel<DragonRenderState> {
          part.visible = bone.visible;
       }
 
-      if (state.riderView && this.neck != null) {
+      if (state.riderView) {
          this.neck.visible = false;
       }
    }
