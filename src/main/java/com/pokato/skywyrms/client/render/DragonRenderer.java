@@ -21,7 +21,7 @@ public class DragonRenderer extends MobRenderer<DragonEntity, DragonRenderState,
          this.textures[blood.ordinal()] = texture(kind, blood, false);
       }
 
-      this.addLayer(new DragonGlowLayer(this, kind));
+      this.addLayer(new DragonGlowLayer(this, context, kind));
    }
 
    public static Identifier texture(DragonKind body, DragonKind blood, boolean glow) {
