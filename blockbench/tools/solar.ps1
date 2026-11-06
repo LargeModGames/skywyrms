@@ -99,7 +99,9 @@ public static class Solar {
         else if(d<R*2.6&&ray>0.55){double fade=1-(d-R)/(R*1.6);Blend(p,255,200,60,0.85*fade+0.15);Glow(p,0.85*fade+0.15);}
         else if(d<R*1.8&&ray2>0.55){double fade=1-(d-R)/(R*0.8);Blend(p,255,185,55,0.8*fade);Glow(p,0.7*fade);}
       }
-    }    var rnd=new Random(5);    // GOLD block (horns, crown disc, tail rays): not glowing
+    }
+    var rnd=new Random(5);
+    // GOLD block (horns, crown disc, tail rays): not glowing
     for(int ty=208;ty<240;ty++)for(int tx=0;tx<128;tx++){double t=rnd.NextDouble();int G=(int)(205+t*42),B=(int)(70+t*90);if(t>0.92){G=250;B=220;}
       for(int yy=0;yy<sc;yy++)for(int xx=0;xx<sc;xx++)Put(tx*sc+xx,ty*sc+yy,255,G,B,0);}
     // RAY block (crown rays, spines): tips orange-gold -> yellow -> white-gold, all glowing
@@ -124,5 +126,3 @@ public static class Solar {
 '@
 [Solar]::Run($SrcTex, $OutTex, $SrcGlow, $OutGlow, [int[]]@(122, 2, 222, 108, 226, 2, 330, 120, 102, 125, 290, 226, 296, 125, 340, 226, 330, 18, 492, 120))
 "solar geo, texture and glow written"
-
-

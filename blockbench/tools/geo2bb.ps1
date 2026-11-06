@@ -67,6 +67,3 @@ $modelName = [IO.Path]::GetFileNameWithoutExtension($Out)
 $json = "{`"meta`":{`"format_version`":`"5.0`",`"model_format`":`"modded_entity`",`"box_uv`":true},`"name`":`"$modelName`",`"model_identifier`":`"$modelName`",`"modded_entity_entity_class`":`"`",`"modded_entity_version`":`"1.17`",`"modded_entity_flip_y`":true,`"visible_box`":[1,1,0],`"variable_placeholders`":`"`",`"variable_placeholder_buttons`":[],`"timeline_setups`":[],`"unhandled_root_fields`":{},`"resolution`":{`"width`":$tw,`"height`":$th},`"elements`":[$($elements -join ',')],`"outliner`":[$(($order | ForEach-Object { GroupJson $_ }) -join ',')],`"textures`":[$texJson]}"
 [IO.File]::WriteAllText($Out, $json, (New-Object Text.UTF8Encoding $false))
 "parts: $($gd.parts.Count)  cubes: $($elements.Count)  -> $Out"
-
-
-

@@ -25,7 +25,7 @@ $chains = @(
     @{ parts = 'tail1', 'tail2', 'tail3'; dir = 1; ext = 10; seg = 12; thin = 2 },
     @{ parts = 'tail4', 'tail5', 'tail6'; dir = 1; ext = 10; seg = 12; thin = 1 }
 )
-$chainNames = 'neck1', 'neck2', 'neck3', 'neck4', 'head', 'tail1', 'tail2', 'tail3', 'tail4', 'tail5', 'tail6'
+$chainNames = @($chains.parts) + 'head'
 foreach ($ch in $chains) {
     foreach ($name in $ch.parts) {
         $p = $byName[$name]

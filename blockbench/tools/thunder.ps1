@@ -2,8 +2,6 @@
 param([string]$SrcGeo, [string]$SrcTex, [string]$OutGeo, [string]$OutTex)
 $ErrorActionPreference = 'Stop'
 $gd = Get-Content $SrcGeo -Raw | ConvertFrom-Json
-$parts = New-Object System.Collections.Generic.List[object]
-foreach ($p in $gd.parts) { $parts.Add($p) }
 
 # bolt texture block lives in the free bottom area of the sheet (UV 0,208 .. 64,240)
 function BoltCube([double]$h, [double]$w = 1) {
@@ -15,7 +13,7 @@ function NewPart($name, $parent, $pivot, $rot, $cube) {
 
 # --- dorsal spines -> zig-zag lightning bolts (three kinked segments) ---
 $out = New-Object System.Collections.Generic.List[object]
-foreach ($p in $parts) {
+foreach ($p in $gd.parts) {
     $out.Add($p)
     if ($p.name -match '^deco_dorsal_\d+$') {
         $h = [math]::Max(2, [double]$p.cubes[0].size[1]) + 1
