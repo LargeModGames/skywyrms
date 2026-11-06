@@ -20,6 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -48,6 +49,9 @@ public final class DragonAbilities {
    public static final double SUN_BEAM_RANGE = 96.0;
    /** How far (in blocks) from the beam line a target can be and still be hit. */
    public static final double SUN_BEAM_WIDTH = 2.0;
+   /** Ticks between sun beam hits, and the tick of each period on which the hit lands. */
+   private static final int SUN_BEAM_PERIOD = 10;
+   private static final int SUN_BEAM_HIT = 3;
    private static final double CONE_SLOPE = 0.26;
    private static final double FX = 1.33;
 
@@ -533,6 +537,18 @@ public final class DragonAbilities {
       return new SunBeam(from, end, mouth);
    }
 
+   /** A unit vector at right angles to the beam direction, horizontal unless the beam is vertical. */
+   public static Vec3 beamSide(Vec3 dir) {
+      Vec3 u = dir.cross(new Vec3(0.0, 1.0, 0.0));
+      return u.lengthSqr() < 1.0E-4 ? new Vec3(1.0, 0.0, 0.0) : u.normalize();
+   }
+
+   /** Flare strength 0..1 of the sun beam: 1 on each hit, fading out over the next three ticks. */
+   public static float sunBeamFlare(float breathAge) {
+      float phase = Mth.positiveModulo(breathAge - SUN_BEAM_HIT, SUN_BEAM_PERIOD) / SUN_BEAM_PERIOD;
+      return phase < 0.3F ? 1.0F - phase / 0.3F : 0.0F;
+   }
+
    /** Every half second, hits each visible enemy within SUN_BEAM_WIDTH of the beam; undead take double and burn. */
    private static void sunBeamTick(DragonEntity dragon, ServerLevel level, int tick) {
       RandomSource random = dragon.getRandom();
@@ -542,7 +558,7 @@ public final class DragonAbilities {
          sound(level, dragon.mouthPosition(), ModSounds.get("ability.sun_beam"), 1.4F, 1.1F + random.nextFloat() * 0.1F);
       }
 
-      if (tick % 10 != 3) {
+      if (tick % SUN_BEAM_PERIOD != SUN_BEAM_HIT) {
          return;
       }
 
@@ -582,12 +598,11 @@ public final class DragonAbilities {
       }
 
       Vec3 dir = delta.scale(1.0 / length);
-      Vec3 u = dir.cross(new Vec3(0.0, 1.0, 0.0));
-      u = u.lengthSqr() < 1.0E-4 ? new Vec3(1.0, 0.0, 0.0) : u.normalize();
+      Vec3 u = beamSide(dir);
       Vec3 v = u.cross(dir).normalize();
       float t = dragon.tickCount;
       double pulse = 0.5 + 0.5 * Math.sin(t * 0.55);
-      boolean flare = dragon.breathAge() % 10 == 3;
+      boolean flare = dragon.breathAge() % SUN_BEAM_PERIOD == SUN_BEAM_HIT;
 
       // two spiral strands twisting along the beam (every other tick keeps the particle count sane)
       if (dragon.tickCount % 2 == 0) {

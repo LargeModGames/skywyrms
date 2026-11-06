@@ -2,6 +2,7 @@ package com.pokato.skywyrms.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.pokato.skywyrms.ability.DragonAbilities;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -29,13 +30,11 @@ public final class SunBeamRenderer {
       }
 
       Vec3 dir = axis.scale(1.0 / length);
-      Vec3 u = dir.cross(new Vec3(0.0, 1.0, 0.0));
-      u = u.lengthSqr() < 1.0E-4 ? new Vec3(1.0, 0.0, 0.0) : u.normalize();
+      Vec3 u = DragonAbilities.beamSide(dir);
       Vec3 w = u.cross(dir).normalize();
       float t = state.beamTime;
       float pulse = 0.5F + 0.5F * (float)Math.sin(t * 0.55F);
-      float phase = ((t + 7.0F) % 10.0F) / 10.0F;
-      float flare = phase < 0.3F ? 1.0F - phase / 0.3F : 0.0F;
+      float flare = DragonAbilities.sunBeamFlare(t);
       float scroll = -t * 0.35F;
       float vLen = (float)length * 0.3F;
 
